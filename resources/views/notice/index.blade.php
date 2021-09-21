@@ -8,12 +8,12 @@
                 <div class="card-header">通知</div>
 
                 <div class="links">
-                    <a href="http://192.168.3.25/~ubuntu/dogs/home">ホーム</a></br>
-                    <a href="http://192.168.3.25/~ubuntu/dogs/mypage">マイページ</a></br>
-                    <a href="http://192.168.3.25/~ubuntu/dogs/search">検索</a></br>
-                    <a href="http://192.168.3.25/~ubuntu/dogs/notice">通知</a></br>
-                    <a href="http://192.168.3.25/~ubuntu/dogs/messages">メッセージ</a></br>
-                    <a href="http://192.168.3.25/~ubuntu/dogs/setup">設定</a>
+                    <a href="{{ route( 'home') }}">ホーム</a><br>
+                    <a href="{{ route( 'mypage', ['user_id' => $user_id]) }}">マイページ</a><br>
+                    <a href="{{ route( 'search') }}">検索</a><br>
+                    <a href="{{ route( 'notice', ['user_id' => $user_id]) }}">通知</a><br>
+                    <a href="{{ route( 'messages', ['user_id' => $user_id]) }}">メッセージ</a><br>
+                    <a href="{{ route( 'setup', ['user_id' => $user_id]) }}">設定</a>
                 </div>
             </div>
         </div>

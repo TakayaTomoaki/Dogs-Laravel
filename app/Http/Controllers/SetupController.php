@@ -1,42 +1,54 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\User;
+use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SetupController extends Controller
 {
-    public function add(Request $request)
+    public function add()
     {
-        $id = User::find($request->id);
+        $user_id = Auth::id();
 
-        return view('setup.index', ['id' => $id]);
+        return view('setup.index', ['user_id' => $user_id]);
     }
 
-    public function edit(Request $request)
+    public function edit()
     {
-        $id = User::find($request->id);
-        if (empty($id)) {
+        $user_id = Auth::id();
+        $user_data = User::find( $user_id);
+
+        if (empty($user_data)) {
             abort(404);
         }
 
-        return view('setup.user', ['user_form' => $id]);
+        return view('setup.user', ['user_form' => $user_data, 'user_id' => $user_id]);
     }
 
-    public function update(Request $request)
+    public function update(Request $request): RedirectResponse
     {
-        $id = User::find($request->id);
-        $user_form = $request->all();
+        $user_id = Auth::id();
+        $user_data = User::find($user_id);
+        $user_form = $request->post();
 
-        unset($user_form['_token']);
-        $id->fill($user_form)->save();
+        $user_data->id = $user_id;
+        $user_data->name = $user_form['name'];
+        $user_data->location = $user_form['location'];
+        $user_data->email = $user_form['email'];
+        $user_data->password = $user_form['password'];
 
-        return redirect('setup');
+        $user_data->save();
+
+        return redirect()->route('setup', ['user_id' => $user_id]);
     }
 
     public function handle()
     {
-        return view('setup.account');
+        $user_id = Auth::id();
+        return view('setup.account', ['user_id' => $user_id]);
     }
 }

@@ -7,7 +7,7 @@
             <div class="card">
                 <div class="card-header">ユーザー設定</div>
                 <div class="card-body">
-                    <form action="{{ action('SetupController@update') }}" method="post" enctype="multipart/form-data">
+                    <form action="{{ action('SetupController@update', ['user_id' => $user_id]) }}" method="post" enctype="multipart/form-data">
 
                         @if (count($errors) > 0)
                         <ul>
@@ -26,8 +26,6 @@
                             <label class="col-md-2">居住地</label>
                             <div class="col-md-8">
                                 <select type="text" class="form-control" name="location">
-                                    <option value="0">- 選択してください -</option>
-
                                     @foreach(config('prefecture.prefs') as $index => $location)
                                     <option value="{{ $index }}" @if($user_form->location==$index) selected @endif>
                                         {{ $location }}
