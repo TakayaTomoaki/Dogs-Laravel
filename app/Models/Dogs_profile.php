@@ -2,7 +2,11 @@
 
 namespace App\Models;
 
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\Dogs_profile
@@ -17,30 +21,34 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $dog_mother
  * @property string|null $dog_introduction
  * @property string|null $dog_image
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|Dogs_profile newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Dogs_profile newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Dogs_profile query()
- * @method static \Illuminate\Database\Eloquent\Builder|Dogs_profile whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Dogs_profile whereDogBirthday($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Dogs_profile whereDogFather($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Dogs_profile whereDogGender($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Dogs_profile whereDogImage($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Dogs_profile whereDogIntroduction($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Dogs_profile whereDogMother($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Dogs_profile whereDogName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Dogs_profile whereDogWeight($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Dogs_profile whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Dogs_profile whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Dogs_profile whereUserId($value)
- * @mixin \Eloquent
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @method static Builder|Dogs_profile newModelQuery()
+ * @method static Builder|Dogs_profile newQuery()
+ * @method static Builder|Dogs_profile query()
+ * @method static Builder|Dogs_profile whereCreatedAt($value)
+ * @method static Builder|Dogs_profile whereDogBirthday($value)
+ * @method static Builder|Dogs_profile whereDogFather($value)
+ * @method static Builder|Dogs_profile whereDogGender($value)
+ * @method static Builder|Dogs_profile whereDogImage($value)
+ * @method static Builder|Dogs_profile whereDogIntroduction($value)
+ * @method static Builder|Dogs_profile whereDogMother($value)
+ * @method static Builder|Dogs_profile whereDogName($value)
+ * @method static Builder|Dogs_profile whereDogWeight($value)
+ * @method static Builder|Dogs_profile whereId($value)
+ * @method static Builder|Dogs_profile whereUpdatedAt($value)
+ * @method static Builder|Dogs_profile whereUserId($value)
+ * @mixin Eloquent
  */
 class Dogs_profile extends Model
 {
     protected $table = 'dogs_profiles';
 
     protected $guarded = ['id'];
+
+    protected $fillable = [
+        'dog_name', 'dog_birthday', 'dog_gender', 'dog_weight', 'dog_father', 'dog_mother'
+    ];
 
     public static $rules = [
         'dog_name' => 'required',
@@ -51,8 +59,8 @@ class Dogs_profile extends Model
         'dog_mother' => 'required',
     ];
 
-    public function user_id()
+    public function user_id(): BelongsTo
     {
-        return belongsTo('App\User');
+        return $this->belongsTo('App\User');
     }
 }
