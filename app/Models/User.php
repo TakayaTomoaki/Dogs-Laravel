@@ -75,4 +75,9 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Dogs_profile');
     }
+
+    public function share(): HasMany
+    {
+        return $this->hasMany('App\Share');
+    }
 }
