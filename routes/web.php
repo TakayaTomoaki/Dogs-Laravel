@@ -18,13 +18,14 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@add')->name('home');
-Route::post('/home', 'ShareController@create')->name('share');
+Route::post('/home', 'HomeController@store')->name('share');
 
 Route::get('/mypage/{user_id}', 'MypageController@add')->name('mypage');
 Route::get('/mypage/profile/create', 'MypageController@create')->name('create');
 Route::post('/mypage/profile/create', 'MypageController@store')->name('store');
 Route::get('/mypage/profile/edit/{user_id}', 'MypageController@edit')->name('edit');
 Route::post('/mypage/profile/edit/{user_id}', 'MypageController@update')->name('update');
+Route::get('/mypage/show/{user_id}', 'MypageController@show')->name('show');
 Route::get('/mypage/delete/{user_id}', 'MypageController@delete')->name('delete');
 
 

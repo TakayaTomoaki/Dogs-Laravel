@@ -22,7 +22,7 @@
                                 <label class="col-md-2">愛犬ネーム</label>
                                 <div class="col-md-8">
                                     <input type="text" class="form-control" name="dog_name"
-                                           value="{{ $prof_data->dog_name }}">
+                                           value="{{ $dog_prof->dog_name }}">
                                 </div>
                             </div>
 
@@ -30,7 +30,7 @@
                                 <label class="col-md-2">生年月日</label>
                                 <div class="col-md-8">
                                     <input type="date" class="form-control" name="dog_birthday"
-                                           value="{{ $prof_data->dog_birthday }}">
+                                           value="{{ $dog_prof->dog_birthday }}">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -53,8 +53,9 @@
                                 <div class="col-md-8">
                                     <select type="text" class="form-control" name="dog_weight">
                                         @for( $i = 1; $i <= 100; $i++) {
-                                        <option value = "{{ $i }}"
-                                                @if($i === $prof_data->dog_weight) selected @endif>{{ $i }} kg
+                                        <option value="{{ $i }}"
+                                                @if($i === $dog_prof->dog_weight) selected @endif>{{ $i }}
+                                            kg
                                         </option>
                                         }
                                         @endfor
@@ -66,7 +67,8 @@
                                 <div class="col-md-8">
                                     <select type="text" class="form-control" name="dog_father">
                                         @foreach ( config( 'dogbreed.breeds' ) as $key=>$breed )
-                                            <option value="{{ $key }}" @if($key === $prof_data->dog_father) selected @endif>{{ $breed }}</option>
+                                            <option value="{{ $key }}"
+                                                    @if($key === $dog_prof->dog_father) selected @endif>{{ $breed }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -76,7 +78,8 @@
                                 <div class="col-md-8">
                                     <select type="text" class="form-control" name="dog_mother">
                                         @foreach ( config( 'dogbreed.breeds' ) as $key=>$breed )
-                                            <option value="{{ $key }}" @if($key === $prof_data->dog_mother) selected @endif>{{ $breed }}</option>
+                                            <option value="{{ $key }}"
+                                                    @if($key === $dog_prof->dog_mother) selected @endif>{{ $breed }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -85,8 +88,9 @@
                             <div class="form-group row">
                                 <label class="col-md-2">愛犬紹介欄</label>
                                 <div class="col-md-8">
-                                <textarea class="form-control" name="dog_introduction"
-                                          rows="20">{{ $prof_data->dog_introduction }}</textarea>
+                                <textarea class="form-control" name="dog_introduction">
+                                    {{ $dog_prof->dog_introduction }}
+                                </textarea>
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -103,9 +107,9 @@
                             </div>
                             <div class="form-group row">
                                 <div class="col-md-8">
-                                    <input type="hidden" name="id" value="{{ $prof_data->id }}">
+                                    <input type="hidden" name="id" value="{{ $dog_prof->id }}">
                                     <input type="hidden" name="user_id"
-                                           value="{{ $prof_data->user_id }}">
+                                           value="{{ $dog_prof->user_id }}">
                                     {{ csrf_field() }}
                                     <input type="submit" class="btn btn-primary" value="更新">
                                 </div>

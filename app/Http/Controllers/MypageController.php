@@ -21,24 +21,23 @@ class MypageController extends Controller
     public function add()
     {
         $user_id = Auth::id();
-        $dates = Dogs_profile::where('user_id', $user_id)->get();
-        foreach ($dates as $data) {
-            $prof_data = $data;
-        }
+        $dog_prof = Dogs_profile::where('user_id', $user_id)->first();
 
-        if (!empty($prof_data)) {
+        if (! empty($dog_prof)) {
             //年齢の計算
             $now = date("Ymd");
-            $birthday = str_replace("-", "", $prof_data->dog_birthday);
+            $birthday = str_replace("-", "", $dog_prof->dog_birthday);
             $dog_age = floor(($now - $birthday) / 10000);
+
             //性別の判定
-            if ($prof_data->dog_gender === 0) {
+            $dog_gender = $dog_prof->dog_gender;
+            if ($dog_prof->dog_gender === 0) {
                 $dog_gender = 'オス';
             }
-            if ($prof_data->dog_gender === 1) {
+            if ($dog_prof->dog_gender === 1) {
                 $dog_gender = 'メス';
             }
-            return view('mypage.index', ['prof_data' => $prof_data, 'user_id' => $user_id, 'dog_age' => $dog_age, 'dog_gender' => $dog_gender]);
+            return view('mypage.index', ['dog_prof' => $dog_prof, 'user_id' => $user_id, 'dog_age' => $dog_age, 'dog_gender' => $dog_gender]);
         }
         return view('mypage.mypage', compact('user_id'));
     }
@@ -63,12 +62,12 @@ class MypageController extends Controller
         $this->validate($request, Dogs_profile::$rules);
         $user_id = Auth::id();
         $dog_prof = new Dogs_profile();
-        $prof_dates = $request->post();
+        $post_data = $request->post();
 
         //postから画像ファイルがあるかを判定
-        if (! empty($prof_dates['dog_image'])) {
+        if (! empty($post_data['dog_image'])) {
             //画像がある場合
-            $path = $prof_dates['dog_image']->store('public/dog_image');
+            $path = $post_data['dog_image']->store('public/dog_image');
             $dog_prof->dog_image = basename($path);
         } else {
             //画像がない場合　nullを代入
@@ -76,13 +75,13 @@ class MypageController extends Controller
         }
 
         $dog_prof->user_id = $user_id;
-        $dog_prof->dog_name = $prof_dates['dog_name'];
-        $dog_prof->dog_birthday = $prof_dates['dog_birthday'];
-        $dog_prof->dog_gender = $prof_dates['dog_gender'];
-        $dog_prof->dog_weight = $prof_dates['dog_weight'];
-        $dog_prof->dog_father = $prof_dates['dog_father'];
-        $dog_prof->dog_mother = $prof_dates['dog_mother'];
-        $dog_prof->dog_introduction = $prof_dates['dog_introduction'];
+        $dog_prof->dog_name = $post_data['dog_name'];
+        $dog_prof->dog_birthday = $post_data['dog_birthday'];
+        $dog_prof->dog_gender = $post_data['dog_gender'];
+        $dog_prof->dog_weight = $post_data['dog_weight'];
+        $dog_prof->dog_father = $post_data['dog_father'];
+        $dog_prof->dog_mother = $post_data['dog_mother'];
+        $dog_prof->dog_introduction = $post_data['dog_introduction'];
 
         $log = $dog_prof->save();
         Log::debug($dog_prof.'Dogs_profileの保存に成功しました。');
@@ -101,56 +100,78 @@ class MypageController extends Controller
     public function edit()
     {
         $user_id = Auth::id();
-        $dates = Dogs_profile::where('user_id', $user_id)->get();
-        foreach ($dates as $data) {
-            $prof_data = $data;
-        }
-        if (! empty($prof_data)) {
-            $dog_gender = $prof_data->dog_gender;
+        $dog_prof = Dogs_profile::where('user_id', $user_id)->first();
+
+        if (! empty($dog_prof)) {
+            $dog_gender = $dog_prof->dog_gender;
         }
 
-        return view('mypage.profile', ['prof_data' => $prof_data, 'user_id' => $user_id, 'dog_gender' => $dog_gender]);
+        return view('mypage.profile', ['dog_prof' => $dog_prof, 'user_id' => $user_id, 'dog_gender' => $dog_gender]);
     }
 
     /**
      * @param Request $request
      * @return RedirectResponse
+     * @throws ValidationException
      */
     public function update(Request $request): RedirectResponse
     {
+        $this->validate($request, Dogs_profile::$rules);
         $user_id = Auth::id();
-        $dates= Dogs_profile::where('user_id', $user_id)->get();
-        foreach ($dates as $data) {
-            $dog_prof = $data;
-        }
-        $prof_dates = $request->post();
+        $dog_prof= Dogs_profile::where('user_id', $user_id)->first();
+        $post_data = $request->post();
 
-        //postから画像があるか判別
-        if ($request->remove === 'true') {
-            $dog_prof->dog_image = null;
-        }
-        if (!empty($prof_dates['dog_image'])) {
-            $path = $prof_dates['dog_image']->store('public/dog_image');
-            $dog_prof->dog_image = basename($path);
-        }
+        if(!empty($dog_prof)) {
+            //画像があるか判別
+            if ($request->remove === 'true') {
+                $dog_prof->dog_image = null;
+            }
+            if (!empty($post_data['dog_image'])) {
+                $path = $post_data['dog_image']->store('public/dog_image');
+                $dog_prof->dog_image = basename($path);
+            }
 
-        $dog_prof->dog_name = $prof_dates['dog_name'];
-        $dog_prof->dog_birthday = $prof_dates['dog_birthday'];
-        $dog_prof->dog_gender = $prof_dates['dog_gender'];
-        $dog_prof->dog_weight = $prof_dates['dog_weight'];
-        $dog_prof->dog_father = $prof_dates['dog_father'];
-        $dog_prof->dog_mother = $prof_dates['dog_mother'];
-        $dog_prof->dog_introduction = $prof_dates['dog_introduction'];
+            $dog_prof->dog_name = $post_data['dog_name'];
+            $dog_prof->dog_birthday = $post_data['dog_birthday'];
+            $dog_prof->dog_gender = $post_data['dog_gender'];
+            $dog_prof->dog_weight = $post_data['dog_weight'];
+            $dog_prof->dog_father = $post_data['dog_father'];
+            $dog_prof->dog_mother = $post_data['dog_mother'];
+            $dog_prof->dog_introduction = $post_data['dog_introduction'];
 
-        $log = $dog_prof->save();
-        Log::debug($dog_prof.'Dogs_profileの更新に成功しました。');
+            $log = $dog_prof->save();
+            Log::debug($dog_prof . 'Dogs_profileの更新に成功しました。');
 
-        if($log === false) {
-            Log::debug($dog_prof.'Dogs_profileの更新に失敗しました。');
-            return back()->with('保存に失敗しました。もう一度、保存ボタンを押して下さい。');
+            if ($log === false) {
+                Log::debug($dog_prof . 'Dogs_profileの更新に失敗しました。');
+                return back()->with('保存に失敗しました。もう一度、保存ボタンを押して下さい。');
+            }
         }
 
         return redirect()->route('mypage', ['user_id' => $user_id]);
+    }
+
+    public function show($id){
+
+        $user_id = Auth::id();
+        $dog_prof= Dogs_profile::where('user_id', $id)->first();
+
+        if (! empty($dog_prof)) {
+            //年齢の計算
+            $now = date("Ymd");
+            $birthday = str_replace("-", "", $dog_prof->dog_birthday);
+            $dog_age = floor(($now - $birthday) / 10000);
+
+            //性別の判定
+            $dog_gender = $dog_prof->dog_gender;
+            if ($dog_prof->dog_gender === 0) {
+                $dog_gender = 'オス';
+            }
+            if ($dog_prof->dog_gender === 1) {
+                $dog_gender = 'メス';
+            }
+        }
+            return view('mypage.show', compact('dog_prof', 'user_id', 'dog_gender', 'dog_age'));
     }
 
     public function delete(Request $request)
