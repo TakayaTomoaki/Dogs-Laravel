@@ -5,17 +5,7 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card m-b-md">
-                    <div class="card-header">
-                        <div class="row justify-content-between">
-                            <div class="col">
-                                プロフィール
-                            </div>
-                            <div class="btn btn-primary btn-sm">
-                                <a href="{{ route('edit', ['user_id'=> $user_id]) }}"
-                                   class="btn-primary">プロフィール変更</a>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="card-header">プロフィール</div>
                     <div class="card-body">
                         <div class="form-group row">
                             <div class="col-md-12">愛犬ネーム ： {{ $dog_prof->dog_name }}</div>
@@ -47,7 +37,7 @@
                         </div>
                         <div class="form-group row">
                             <div class="col-md-12">愛犬紹介欄 ：
-                                {!!  nl2br($dog_prof->dog_introduction) !!}
+                                {{ $dog_prof->dog_introduction }}
                             </div>
                         </div>
                     </div>

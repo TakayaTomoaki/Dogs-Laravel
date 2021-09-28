@@ -8,10 +8,10 @@
                 <div class="card-header">設定</div>
 
                 <div class="card-body">
-                    <a href="{{ action('SetupController@edit', ['id' => $id]) }}">ユーザー設定</a>
+                    <a href="{{ route('user', ['user_id' => $user_id]) }}">ユーザー設定</a>
                 </div>
                 <div class="card-body">
-                    <a href="http://192.168.3.25/~ubuntu/dogs/setup/account">アカウント管理</a>
+                    <a href="{{ route('account', ['user_id' => $user_id]) }}">アカウント管理</a>
                 </div>
 
 

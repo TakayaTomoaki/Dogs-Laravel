@@ -39,12 +39,12 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
                         <div class="links">
-                            <a href="http://192.168.3.25/~ubuntu/dogs/home">ホーム</a>
-                            <a href="http://192.168.3.25/~ubuntu/dogs/mypage">マイページ</a>
-                            <a href="http://192.168.3.25/~ubuntu/dogs/search">検索</a>
-                            <a href="http://192.168.3.25/~ubuntu/dogs/notice">通知</a>
-                            <a href="http://192.168.3.25/~ubuntu/dogs/messages">メッセージ</a>
-                            <a href="http://192.168.3.25/~ubuntu/dogs/setup">設定</a>
+                            <a href="{{ route( 'home') }}">ホーム</a>
+                            <a href="{{ route( 'mypage', ['user_id' => $user_id]) }}">マイページ</a>
+                            <a href="{{ route( 'search') }}">検索</a>
+                            <a href="{{ route( 'notice', ['user_id' => $user_id]) }}">通知</a>
+                            <a href="{{ route( 'messages', ['user_id' => $user_id]) }}">メッセージ</a>
+                            <a href="{{ route( 'setup', ['user_id' => $user_id]) }}">設定</a>
                         </div>
                     </ul>
                 </div>

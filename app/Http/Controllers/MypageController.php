@@ -1,70 +1,177 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Dogs_profile;
+use App\Models\Dogs_profile;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 
 class MypageController extends Controller
 {
-    public function add(Request $request)
+    /**
+     * @return Application|Factory|View
+     */
+    public function add()
     {
-        $is_dog = Dogs_profile::find($request->id);
+        $user_id = Auth::id();
+        $dog_prof = Dogs_profile::where('user_id', $user_id)->first();
 
-        if (empty($is_dog)) {
-            return view('mypage.mypage');
-        } else {
-            return view('mypage.index', ['is_dog' => $is_dog]);
+        if (! empty($dog_prof)) {
+            //年齢の計算
+            $now = date("Ymd");
+            $birthday = str_replace("-", "", $dog_prof->dog_birthday);
+            $dog_age = floor(($now - $birthday) / 10000);
+
+            //性別の判定
+            $dog_gender = $dog_prof->dog_gender;
+            if ($dog_prof->dog_gender === 0) {
+                $dog_gender = 'オス';
+            }
+            if ($dog_prof->dog_gender === 1) {
+                $dog_gender = 'メス';
+            }
+            return view('mypage.index', ['dog_prof' => $dog_prof, 'user_id' => $user_id, 'dog_age' => $dog_age, 'dog_gender' => $dog_gender]);
         }
+        return view('mypage.mypage', compact('user_id'));
     }
 
-    public function edit(Request $request)
+    /**
+     * @return Application|Factory|View
+     */
+    public function create()
     {
-        $is_dog = Dogs_profile::find($request->id);
+        $user_id = Auth::id();
 
-        if (empty($is_dog)) {
-            return redirect('mypage/profile/create');
-        } else {
-            return view('mypage.profile', ['is_dog' => $is_dog]);
-        }
+        return view('mypage.create', compact('user_id'));
     }
 
-    public function create(Request $request)
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     * @throws ValidationException
+     */
+    public function store(Request $request): RedirectResponse
     {
         $this->validate($request, Dogs_profile::$rules);
-        $is_dog = new Dogs_profile();
-        $dog_prof = $request->all();
+        $user_id = Auth::id();
+        $dog_prof = new Dogs_profile();
+        $post_data = $request->post();
 
-        if (isset($dog_prof['dog_image'])) {
-            $path = $request->file('dog_image')->store('public/dog_image');
-            $is_dog->dog_image = basename($path);
+        //postから画像ファイルがあるかを判定
+        if (! empty($post_data['dog_image'])) {
+            //画像がある場合
+            $path = $post_data['dog_image']->store('public/dog_image');
+            $dog_prof->dog_image = basename($path);
         } else {
-            $is_dog->dog_image = null;
+            //画像がない場合　nullを代入
+            $dog_prof->dog_image = null;
         }
 
-        unset($dog_prof['_token']);
-        unset($dog_prof['dog_image']);
-        $is_dog->fill($dog_prof)->save();
-        return redirect('mypage');
+        $dog_prof->user_id = $user_id;
+        $dog_prof->dog_name = $post_data['dog_name'];
+        $dog_prof->dog_birthday = $post_data['dog_birthday'];
+        $dog_prof->dog_gender = $post_data['dog_gender'];
+        $dog_prof->dog_weight = $post_data['dog_weight'];
+        $dog_prof->dog_father = $post_data['dog_father'];
+        $dog_prof->dog_mother = $post_data['dog_mother'];
+        $dog_prof->dog_introduction = $post_data['dog_introduction'];
+
+        $log = $dog_prof->save();
+        Log::debug($dog_prof.'Dogs_profileの保存に成功しました。');
+
+        if($log === false) {
+            Log::debug($dog_prof.'Dogs_profileの保存に失敗しました。');
+            return back()->with('保存に失敗しました。もう一度、保存ボタンを押して下さい。');
+        }
+
+        return redirect()->route('mypage', ['user_id' => $user_id]);
     }
 
-    public function update(Request $request)
+    /**
+     * @return Application|Factory|View
+     */
+    public function edit()
     {
-        $is_dog = Dogs_profile::find($request->id);
-        $dog_form = $request->all();
-        if ($request->remove == 'true') {
-            $dog_form['dog_image'] = null;
-        } elseif ($request->file('dog_image')) {
-            $path = $request->file('dog_image')->store('public/dog_image');
-        } else {
-            $dog_form['dog_image'] = $is_dog->dog_image;
-        }
-        unset($dog_form['_token']);
-        unset($dog_form['dog_image']);
-        unset($dog_form['remove']);
-        $is_dog->fill($dog_form)->save();
+        $user_id = Auth::id();
+        $dog_prof = Dogs_profile::where('user_id', $user_id)->first();
 
-        return redirect('mypage');
+        if (! empty($dog_prof)) {
+            $dog_gender = $dog_prof->dog_gender;
+        }
+
+        return view('mypage.profile', ['dog_prof' => $dog_prof, 'user_id' => $user_id, 'dog_gender' => $dog_gender]);
+    }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     * @throws ValidationException
+     */
+    public function update(Request $request): RedirectResponse
+    {
+        $this->validate($request, Dogs_profile::$rules);
+        $user_id = Auth::id();
+        $dog_prof= Dogs_profile::where('user_id', $user_id)->first();
+        $post_data = $request->post();
+
+        if(!empty($dog_prof)) {
+            //画像があるか判別
+            if ($request->remove === 'true') {
+                $dog_prof->dog_image = null;
+            }
+            if (!empty($post_data['dog_image'])) {
+                $path = $post_data['dog_image']->store('public/dog_image');
+                $dog_prof->dog_image = basename($path);
+            }
+
+            $dog_prof->dog_name = $post_data['dog_name'];
+            $dog_prof->dog_birthday = $post_data['dog_birthday'];
+            $dog_prof->dog_gender = $post_data['dog_gender'];
+            $dog_prof->dog_weight = $post_data['dog_weight'];
+            $dog_prof->dog_father = $post_data['dog_father'];
+            $dog_prof->dog_mother = $post_data['dog_mother'];
+            $dog_prof->dog_introduction = $post_data['dog_introduction'];
+
+            $log = $dog_prof->save();
+            Log::debug($dog_prof . 'Dogs_profileの更新に成功しました。');
+
+            if ($log === false) {
+                Log::debug($dog_prof . 'Dogs_profileの更新に失敗しました。');
+                return back()->with('保存に失敗しました。もう一度、保存ボタンを押して下さい。');
+            }
+        }
+
+        return redirect()->route('mypage', ['user_id' => $user_id]);
+    }
+
+    public function show($id){
+
+        $user_id = Auth::id();
+        $dog_prof= Dogs_profile::where('user_id', $id)->first();
+
+        if (! empty($dog_prof)) {
+            //年齢の計算
+            $now = date("Ymd");
+            $birthday = str_replace("-", "", $dog_prof->dog_birthday);
+            $dog_age = floor(($now - $birthday) / 10000);
+
+            //性別の判定
+            $dog_gender = $dog_prof->dog_gender;
+            if ($dog_prof->dog_gender === 0) {
+                $dog_gender = 'オス';
+            }
+            if ($dog_prof->dog_gender === 1) {
+                $dog_gender = 'メス';
+            }
+        }
+            return view('mypage.show', compact('dog_prof', 'user_id', 'dog_gender', 'dog_age'));
     }
 
     public function delete(Request $request)
