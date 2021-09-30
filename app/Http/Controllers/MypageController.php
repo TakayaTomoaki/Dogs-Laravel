@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Dogs_profile;
+use App\Models\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
@@ -61,6 +62,7 @@ class MypageController extends Controller
     {
         $this->validate($request, Dogs_profile::$rules);
         $user_id = Auth::id();
+        $user = User::find($user_id);
         $dog_prof = new Dogs_profile();
         $post_data = $request->post();
 
@@ -76,11 +78,14 @@ class MypageController extends Controller
 
         $dog_prof->user_id = $user_id;
         $dog_prof->dog_name = $post_data['dog_name'];
+        $dog_prof->location = config('prefecture.prefs') [$user['location']];
         $dog_prof->dog_birthday = $post_data['dog_birthday'];
         $dog_prof->dog_gender = $post_data['dog_gender'];
         $dog_prof->dog_weight = $post_data['dog_weight'];
         $dog_prof->dog_father = $post_data['dog_father'];
+        $dog_prof->dog_daddy = config('dogbreed.breeds') [$post_data['dog_father']];
         $dog_prof->dog_mother = $post_data['dog_mother'];
+        $dog_prof->dog_mommy = config('dogbreed.breeds') [$post_data['dog_mother']];
         $dog_prof->dog_introduction = $post_data['dog_introduction'];
 
         $log = $dog_prof->save();
@@ -136,7 +141,9 @@ class MypageController extends Controller
             $dog_prof->dog_gender = $post_data['dog_gender'];
             $dog_prof->dog_weight = $post_data['dog_weight'];
             $dog_prof->dog_father = $post_data['dog_father'];
+            $dog_prof->dog_daddy = config('dogbreed.breeds') [$post_data['dog_father']];
             $dog_prof->dog_mother = $post_data['dog_mother'];
+            $dog_prof->dog_mommy = config('dogbreed.breeds') [$post_data['dog_father']];
             $dog_prof->dog_introduction = $post_data['dog_introduction'];
 
             $log = $dog_prof->save();

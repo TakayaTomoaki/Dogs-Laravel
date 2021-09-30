@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\Dogs_profile;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -42,6 +43,13 @@ class SetupController extends Controller
         $user_data->password = $user_form['password'];
 
         $user_data->save();
+
+        $dog = Dogs_profile::where('user_id', $user_id)->first();
+
+        if ($dog !== null){
+            $dog->location = config('prefecture.prefs') [$user_data['location']];
+            $dog->save();
+        }
 
         return redirect()->route('setup', ['user_id' => $user_id]);
     }
