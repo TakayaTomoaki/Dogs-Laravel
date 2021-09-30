@@ -27,7 +27,7 @@
                             <div class="col-md-8">
                                 <select type="text" class="form-control" name="location">
                                     @foreach(config('prefecture.prefs') as $index => $location)
-                                    <option value="{{ $index }}" @if($user_form->location==$index) selected @endif>
+                                    <option value="{{ $index }}" @if($user_form->location===$index) selected @endif>
                                         {{ $location }}
                                     </option>
                                     @endforeach
