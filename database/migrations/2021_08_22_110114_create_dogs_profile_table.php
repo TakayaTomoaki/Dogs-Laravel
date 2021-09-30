@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class CreateDogsProfileTable extends Migration
 {
@@ -17,11 +18,14 @@ class CreateDogsProfileTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedbigInteger('user_id')->unique();
             $table->string('dog_name', 30);
+            $table->string('location');
             $table->date('dog_birthday');
             $table->boolean('dog_gender');
             $table->integer('dog_weight');
             $table->string('dog_father');
+            $table->string('dog_daddy');
             $table->string('dog_mother');
+            $table->string('dog_mommy');
             $table->string('dog_introduction')->nullable();
             $table->string('dog_image')->nullable();
             $table->timestamps();
@@ -32,8 +36,14 @@ class CreateDogsProfileTable extends Migration
                 ->on('users')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
+
         });
+        DB::statement('ALTER TABLE dogs_profiles ADD FULLTEXT INDEX ft_index (`dog_name`, `location`, `dog_daddy`, `dog_mommy`, `dog_introduction`) WITH PARSER ngram');
     }
+
+
+
+
 
     /**
      * Reverse the migrations.
@@ -43,5 +53,8 @@ class CreateDogsProfileTable extends Migration
     public function down()
     {
         Schema::dropIfExists('dogs_profile');
+        Schema::table('dogs_profiles', function ($table) {
+            $table->dropIndex('ft_index');
+        });
     }
 }
