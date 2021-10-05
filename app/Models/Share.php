@@ -6,6 +6,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -32,10 +33,10 @@ use Illuminate\Support\Carbon;
  */
 class Share extends Model
 {
-    protected $guarded = ['id'];
+    use SoftDeletes;
 
     protected $fillable = [
-        'user_id', 'body'
+        'body'
     ];
 
     public function user_id(): BelongsTo

@@ -39,6 +39,12 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Dogs_profile whereUpdatedAt($value)
  * @method static Builder|Dogs_profile whereUserId($value)
  * @mixin Eloquent
+ * @property string $location
+ * @property string $dog_daddy
+ * @property string $dog_mommy
+ * @method static Builder|Dogs_profile whereDogDaddy($value)
+ * @method static Builder|Dogs_profile whereDogMommy($value)
+ * @method static Builder|Dogs_profile whereLocation($value)
  */
 class Dogs_profile extends Model
 {
