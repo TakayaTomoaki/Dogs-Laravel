@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Dogs_profile;
+use App\Models\Share;
 use App\Models\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -19,28 +20,25 @@ class MypageController extends Controller
     /**
      * @return Application|Factory|View
      */
-    public function add()
+    public function add($user_id)
     {
-        $user_id = Auth::id();
+        $user = Auth::id();
         $dog_prof = Dogs_profile::where('user_id', $user_id)->first();
 
-        if (! empty($dog_prof)) {
-            //年齢の計算
-            $now = date("Ymd");
-            $birthday = str_replace("-", "", $dog_prof->dog_birthday);
-            $dog_age = floor(($now - $birthday) / 10000);
+        //年齢の計算：App/helpers.php
+        $dog_age = age($user_id);
+        //性別の判定：App/helpers.php
+        $dog_gender = gender($user_id);
 
-            //性別の判定
-            $dog_gender = $dog_prof->dog_gender;
-            if ($dog_prof->dog_gender === 0) {
-                $dog_gender = 'オス';
-            }
-            if ($dog_prof->dog_gender === 1) {
-                $dog_gender = 'メス';
-            }
-            return view('mypage.index', ['dog_prof' => $dog_prof, 'user_id' => $user_id, 'dog_age' => $dog_age, 'dog_gender' => $dog_gender]);
+        $shares = Share::where('user_id', $user_id)->get();
+        if (empty($shares)) {
+            $shares = null;
         }
-        return view('mypage.mypage', compact('user_id'));
+
+        if (!empty($dog_prof)) {
+            return view('mypage.index', compact('dog_prof', 'user_id', 'dog_age', 'dog_gender', 'shares'));
+        }
+        return view('mypage.mypage', ['user_id' => $user]);
     }
 
     /**
@@ -67,7 +65,7 @@ class MypageController extends Controller
         $post_data = $request->post();
 
         //postから画像ファイルがあるかを判定
-        if (! empty($post_data['dog_image'])) {
+        if (!empty($post_data['dog_image'])) {
             //画像がある場合
             $path = $post_data['dog_image']->store('public/dog_image');
             $dog_prof->dog_image = basename($path);
@@ -89,10 +87,10 @@ class MypageController extends Controller
         $dog_prof->dog_introduction = $post_data['dog_introduction'];
 
         $log = $dog_prof->save();
-        Log::debug($dog_prof.'Dogs_profileの保存に成功しました。');
+        Log::debug($dog_prof . 'Dogs_profileの保存に成功しました。');
 
-        if($log === false) {
-            Log::debug($dog_prof.'Dogs_profileの保存に失敗しました。');
+        if ($log === false) {
+            Log::debug($dog_prof . 'Dogs_profileの保存に失敗しました。');
             return back()->with('保存に失敗しました。もう一度、保存ボタンを押して下さい。');
         }
 
@@ -107,7 +105,7 @@ class MypageController extends Controller
         $user_id = Auth::id();
         $dog_prof = Dogs_profile::where('user_id', $user_id)->first();
 
-        if (! empty($dog_prof)) {
+        if (!empty($dog_prof)) {
             $dog_gender = $dog_prof->dog_gender;
         }
 
@@ -123,10 +121,10 @@ class MypageController extends Controller
     {
         $this->validate($request, Dogs_profile::$rules);
         $user_id = Auth::id();
-        $dog_prof= Dogs_profile::where('user_id', $user_id)->first();
+        $dog_prof = Dogs_profile::where('user_id', $user_id)->first();
         $post_data = $request->post();
 
-        if(!empty($dog_prof)) {
+        if (!empty($dog_prof)) {
             //画像があるか判別
             if ($request->remove === 'true') {
                 $dog_prof->dog_image = null;
@@ -156,29 +154,6 @@ class MypageController extends Controller
         }
 
         return redirect()->route('mypage', ['user_id' => $user_id]);
-    }
-
-    public function show($id){
-
-        $user_id = Auth::id();
-        $dog_prof= Dogs_profile::where('user_id', $id)->first();
-
-        if (! empty($dog_prof)) {
-            //年齢の計算
-            $now = date("Ymd");
-            $birthday = str_replace("-", "", $dog_prof->dog_birthday);
-            $dog_age = floor(($now - $birthday) / 10000);
-
-            //性別の判定
-            $dog_gender = $dog_prof->dog_gender;
-            if ($dog_prof->dog_gender === 0) {
-                $dog_gender = 'オス';
-            }
-            if ($dog_prof->dog_gender === 1) {
-                $dog_gender = 'メス';
-            }
-        }
-            return view('mypage.show', compact('dog_prof', 'user_id', 'dog_gender', 'dog_age'));
     }
 
     public function delete(Request $request)

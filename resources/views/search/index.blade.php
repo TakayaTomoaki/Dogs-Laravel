@@ -20,7 +20,7 @@
                     @if(!empty($outputs))
                         @foreach($outputs as $output)
                             @if ($output->user_id !== $user_id)
-                                <a href="{{ route('show', ['user_id' => $output->user_id]) }}"
+                                <a href="{{ route('mypage', ['user_id' => $output->user_id]) }}"
                                    class="list-group-item list-group-item-action">
 
                                     <div class="card-body">
@@ -42,14 +42,14 @@
                                             <div class="w-25">
                                                 <object>
                                                     <a class="btn btn-primary btn-sm rounded-pill"
-                                                       href="{{ route('show', ['user_id' => $output->user_id]) }}">フォロー</a>
+                                                       href="{{ route('mypage', ['user_id' => $output->user_id]) }}">フォロー</a>
                                                 </object>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="w-25">{{ $output->location }}</div>
                                             <div class="w-25">
-                                                {{ floor((date("Ymd") - str_replace("-", "", $output->dog_birthday)) / 10000) }}
+                                                {{ age($output->user_id) }}
                                                 歳
                                             </div>
                                             <div class="w-25">
@@ -86,7 +86,7 @@
                     @if (!empty($profiles))
                         @foreach($profiles as $dog_prof)
                             @if ($dog_prof->user_id !== $user_id)
-                                <a href="{{ route('show', ['user_id' => $dog_prof->user_id]) }}"
+                                <a href="{{ route('mypage', ['user_id' => $dog_prof->user_id]) }}"
                                    class="list-group-item list-group-item-action">
 
                                     <div class="card-body">
@@ -110,14 +110,14 @@
                                             <div class="w-25">
                                                 <object>
                                                     <a class="btn btn-primary btn-sm rounded-pill"
-                                                       href="{{ route('show', ['user_id' => $dog_prof->user_id]) }}">フォロー</a>
+                                                       href="{{ route('mypage', ['user_id' => $dog_prof->user_id]) }}">フォロー</a>
                                                 </object>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="w-25">{{ $dog_prof->location }}</div>
                                             <div class="w-25">
-                                                {{ floor((date("Ymd") - str_replace("-", "", $dog_prof->dog_birthday)) / 10000) }}
+                                                {{ age($dog_prof->user_id) }}
                                                 歳
                                             </div>
                                             <div class="w-25">

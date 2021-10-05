@@ -28,6 +28,8 @@ Route::post('/mypage/profile/edit/{user_id}', 'MypageController@update')->name('
 Route::get('/mypage/show/{user_id}', 'MypageController@show')->name('show');
 Route::get('/mypage/delete/{user_id}', 'MypageController@delete')->name('delete');
 
+Route::get('/comment/{id}', 'CommentController@add')->name('comment');
+Route::post('/comment/{id}', 'CommentController@store')->name('comment_store');
 
 Route::get('/search', 'SearchController@add')->name('search');
 
