@@ -30,6 +30,9 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Share whereUpdatedAt($value)
  * @method static Builder|Share whereUserId($value)
  * @mixin Eloquent
+ * @method static \Illuminate\Database\Query\Builder|Share onlyTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Share withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Share withoutTrashed()
  */
 class Share extends Model
 {

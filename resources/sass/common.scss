@@ -49,3 +49,9 @@ html, body {
 .m-b-md {
     margin-bottom: 30px;
     }
+
+.ui-datepicker-title{
+    display: flex;
+    justify-content: center;
+    -webkit-justify-content: center;
+}

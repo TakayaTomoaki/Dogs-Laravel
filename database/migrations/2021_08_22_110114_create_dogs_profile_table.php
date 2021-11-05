@@ -30,7 +30,6 @@ class CreateDogsProfileTable extends Migration
             $table->string('dog_image')->nullable();
             $table->timestamps();
 
-
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')

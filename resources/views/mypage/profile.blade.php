@@ -17,7 +17,6 @@
                                     @endforeach
                                 </ul>
                             @endif
-
                             <div class="form-group row">
                                 <label class="col-md-2">愛犬ネーム</label>
                                 <div class="col-md-8">
@@ -29,8 +28,9 @@
                             <div class="form-group row">
                                 <label class="col-md-2">生年月日</label>
                                 <div class="col-md-8">
-                                    <input type="date" class="form-control" name="dog_birthday"
-                                           value="{{ $dog_prof->dog_birthday }}">
+                                    <input type="text" id="datepicker" placeholder="日付を選択してください"
+                                           value="{{ $dog_prof->dog_birthday }}"
+                                           name="dog_birthday">
                                 </div>
                             </div>
                             <div class="form-group row">

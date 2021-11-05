@@ -11,6 +11,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -23,23 +24,86 @@ class MypageController extends Controller
     public function add($user_id)
     {
         $user = Auth::id();
-        $dog_prof = Dogs_profile::where('user_id', $user_id)->first();
+        //プロフィール情報の取得
+        $sql = <<<SQL
+SELECT dog_name,location,dog_birthday,dog_gender,dog_weight,dog_daddy,dog_mommy,dog_introduction,dog_image,
+        (SELECT count(*) FROM follows WHERE receiver = $user_id AND follower = $user) AS follow,
+        (SELECT count(*) FROM follows WHERE receiver = $user AND follower = $user_id) AS follower,
+        (SELECT COUNT(follower) FROM follows WHERE follower = $user_id) AS countFollow,
+        (SELECT COUNT(receiver) FROM follows WHERE receiver = $user_id) AS countReceive
+FROM dogs_profiles
+WHERE user_id = $user_id
+SQL;
 
-        //年齢の計算：App/helpers.php
-        $dog_age = age($user_id);
-        //性別の判定：App/helpers.php
-        $dog_gender = gender($user_id);
+        $dog_prof = DB::SELECT($sql);
 
-        $shares = Share::where('user_id', $user_id)->get();
+//        dd($dog_prof);
+
+        if ($dog_prof !== []) {
+            //年齢の計算：App/helpers.php
+            $dog_age = age($dog_prof[0]->dog_birthday);
+            //性別の判定：App/helpers.php
+            $dog_gender = gender((bool)$dog_prof[0]->dog_gender);
+        }
+
+        //投稿一覧の取得
+        $sql2 = <<<SQL
+SELECT id,user_id,body,image,created_at,
+        (SELECT COUNT(user_id) FROM nices WHERE share_id = shares.id) AS nice,
+        (SELECT COUNT(user_id) FROM comments WHERE share_id = shares.id) AS comment,
+        (SELECT COUNT(*) FROM nices WHERE user_id = $user AND share_id = shares.id) AS count
+FROM shares
+WHERE user_id = $user_id
+ORDER BY created_at DESC
+SQL;
+        $shares = DB::select($sql2);
+
         if (empty($shares)) {
             $shares = null;
         }
 
+        //いいね一覧の取得
+        $sql3 = <<<SQL
+SELECT nices.user_id, share_id, shares.user_id AS your_id, body, created_at,
+        (SELECT dog_name FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_name,
+        (SELECT dog_gender FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_gender,
+        (SELECT COUNT(user_id) FROM nices WHERE share_id = shares.id) AS nice,
+        (SELECT COUNT(user_id) FROM comments WHERE share_id = shares.id) AS comment,
+        (SELECT COUNT(*) FROM nices WHERE user_id = $user AND share_id = shares.id) AS count
+FROM nices
+LEFT JOIN shares
+ON nices.share_id = shares.id        
+WHERE nices.user_id = $user_id
+ORDER BY created_at DESC
+SQL;
+        $nices = DB::select($sql3);
+
+        //コメント一覧の取得
+        $sql4 = <<<SQL
+SELECT id,user_id,body,image,created_at,
+        (SELECT dog_name FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_name,
+        (SELECT dog_gender FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_gender,
+        (SELECT COUNT(user_id) FROM nices WHERE share_id = shares.id) AS nice,
+        (SELECT COUNT(user_id) FROM comments WHERE share_id = shares.id) AS comment,
+        (SELECT COUNT(*) FROM nices WHERE user_id = $user AND share_id = shares.id) AS count
+FROM shares
+WHERE id IN (SELECT share_id FROM comments WHERE user_id = $user_id)
+ORDER BY created_at DESC
+SQL;
+        $comments = DB::select($sql4);
+//        dd($comments);
+
+
+
         if (!empty($dog_prof)) {
-            return view('mypage.index', compact('dog_prof', 'user_id', 'dog_age', 'dog_gender', 'shares'));
+            return view('mypage.index',
+                compact('dog_prof', 'user_id', 'dog_age', 'dog_gender', 'shares', 'nices', 'comments'));
         }
         return view('mypage.mypage', ['user_id' => $user]);
     }
+
+
+
 
     /**
      * @return Application|Factory|View
@@ -51,6 +115,8 @@ class MypageController extends Controller
         return view('mypage.create', compact('user_id'));
     }
 
+
+
     /**
      * @param Request $request
      * @return RedirectResponse
@@ -61,7 +127,7 @@ class MypageController extends Controller
         $this->validate($request, Dogs_profile::$rules);
         $user_id = Auth::id();
         $user = User::find($user_id);
-        $dog_prof = new Dogs_profile();
+        $dog_prof = new Dogs_profile;
         $post_data = $request->post();
 
         //postから画像ファイルがあるかを判定
@@ -156,12 +222,38 @@ class MypageController extends Controller
         return redirect()->route('mypage', ['user_id' => $user_id]);
     }
 
-    public function delete(Request $request)
+    public function follow($id)
     {
-        $dog_prof = Dogs_profile::find($request->id);
-        // $dog_image = $dog_prof()->dog_image;
-        // Dogs_profile::delete('delete users where name = ?', ['John'])
-        $dog_prof->delete();
-        return redirect('mypage/profile');
+        $user_id = Auth::id();
+
+        $sql = <<<SQL
+SELECT user_id,dog_name,dog_birthday,dog_gender,dog_weight,dog_daddy,dog_mommy,location,
+              (SELECT count(*) FROM follows WHERE receiver = user_id AND follower = $user_id) AS follow
+FROM dogs_profiles
+WHERE user_id IN (SELECT receiver FROM follows WHERE follower = $id)
+SQL;
+        $followers = DB::SELECT($sql);
+//        dd($followers);
+
+        return view('mypage.follower', compact('user_id', 'followers'));
     }
+
+
+
+    public function receive($id)
+    {
+        $user_id = Auth::id();
+
+        $sql = <<<SQL
+SELECT user_id,dog_name,dog_birthday,dog_gender,dog_weight,dog_daddy,dog_mommy,location,
+              (SELECT count(*) FROM follows WHERE receiver = user_id AND follower = $id) AS follow
+FROM dogs_profiles
+WHERE user_id IN (SELECT follower FROM follows WHERE receiver = $id)
+SQL;
+        $receivers = DB::SELECT($sql);
+//        dd($followers);
+
+        return view('mypage.receiver', compact('user_id', 'receivers'));
+    }
+
 }

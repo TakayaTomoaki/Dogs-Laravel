@@ -29,6 +29,9 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Comment whereUpdatedAt($value)
  * @method static Builder|Comment whereUserId($value)
  * @mixin Eloquent
+ * @method static \Illuminate\Database\Query\Builder|Comment onlyTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Comment withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Comment withoutTrashed()
  */
 class Comment extends Model
 {

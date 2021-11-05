@@ -15,5 +15,6 @@ class DatabaseSeeder extends Seeder
         $this->call(DogsProfilesTableSeeder::class);
         $this->call(SharesTableSeeder::class);
         $this->call(CommentsTableSeeder::class);
+        $this->call(NicesTableSeeder::class);
     }
 }

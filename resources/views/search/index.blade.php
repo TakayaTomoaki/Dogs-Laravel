@@ -6,7 +6,8 @@
             <div class="col-md-8">
                 <div class="card m-b-md">
                     <div class="card-header">
-                        <div class="p-2 float-left align-self-center">検索</div>
+                        <div class="p-2 float-left align-self-center">
+                            検索</div>
                         <div class="float-right">
                             <form class="form-inline" method="get" action="{{ route( 'search') }}">
                                 <input class="form-control mr-sm-2 rounded-pill" name="search"
@@ -24,49 +25,77 @@
                                    class="list-group-item list-group-item-action">
 
                                     <div class="card-body">
-                                        <div class="mh-100 w-25 float-left">
-                                            <svg class="bd-placeholder-img mr-3 rounded" width="75"
-                                                 height="75" xmlns="http://www.w3.org/2000/svg"
-                                                 preserveAspectRatio="xMidYMid slice"
-                                                 focusable="false" role="img"
-                                                 aria-label="Generic placeholder image"><title>
-                                                    Generic placeholder image</title>
-                                                <rect width="100%" height="100%" fill="#868e96"/>
-                                            </svg>
-                                        </div>
-                                        <div class="row">
-                                            <div class="w-75 font-weight-bold">{{ $output->dog_name }}
-                                                @if($output->dog_gender === 0) くん@endif
-                                                @if($output->dog_gender === 1) ちゃん@endif
+                                        <div class="row g-0">
+                                            <div class="col-2">
+                                                <svg class="bd-placeholder-img mr-3 rounded"
+                                                     width="60"
+                                                     height="60" xmlns="http://www.w3.org/2000/svg"
+                                                     preserveAspectRatio="xMidYMid slice"
+                                                     focusable="false" role="img"
+                                                     aria-label="Generic placeholder image"><title>
+                                                        Generic placeholder image</title>
+                                                    <rect width="100%" height="100%"
+                                                          fill="#868e96"/>
+                                                </svg>
                                             </div>
-                                            <div class="w-25">
-                                                <object>
-                                                    <a class="btn btn-primary btn-sm rounded-pill"
-                                                       href="{{ route('mypage', ['user_id' => $output->user_id]) }}">フォロー</a>
-                                                </object>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="w-25">{{ $output->location }}</div>
-                                            <div class="w-25">
-                                                {{ age($output->user_id) }}
-                                                歳
-                                            </div>
-                                            <div class="w-25">
-                                                {{ $output->dog_weight }} kg
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="w-100">犬種：
-                                                {{--                                                純血犬とMix犬とで表示を変更--}}
-                                                @if($output->dog_father === $output->dog_mother)
-                                                    {{ $output->dog_daddy }}
-                                                @endif
-                                                @if($output->dog_father !== $output->dog_mother)
-                                                    {{ $output->dog_daddy }}
-                                                    ×
-                                                    {{ $output->dog_mommy }}
-                                                @endif
+                                            <div class="col-10">
+                                                <div class="row d-flex">
+                                                    <div class="col-7 font-weight-bold">{{ $output->dog_name }}
+                                                        {{ nameTitle($output->dog_gender) }}
+                                                    </div>
+                                                    <div class="col-5">
+                                                        @if($output->follow === 0)
+                                                            <object>
+                                                                <form method="post"
+                                                                      action="{{ route('follow', ['user_id' => $user_id]) }}">
+                                                                    {{ csrf_field() }}
+                                                                    <input type="hidden" name="id"
+                                                                           value="{{ $output->user_id }}">
+                                                                    <button class="btn btn-primary btn-sm rounded-pill"
+                                                                            type="submit">フォロー
+                                                                    </button>
+                                                                </form>
+                                                            </object>
+                                                        @endif
+                                                        @if($output->follow === 1)
+                                                            <object>
+                                                                <form method="post"
+                                                                      action="{{ route('unfollow', ['user_id' => $user_id]) }}">
+                                                                    {{ csrf_field() }}
+
+                                                                    <input type="hidden" name="id"
+                                                                           value="{{ $output->user_id }}">
+                                                                    <button class="btn btn-danger btn-sm rounded-pill"
+                                                                            type="submit">フォロー解除
+                                                                    </button>
+                                                                </form>
+                                                            </object>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">{{ $output->location }}</div>
+                                                    <div class="col">
+                                                        {{ age($output->user_id) }}
+                                                        歳
+                                                    </div>
+                                                    <div class="col">
+                                                        {{ $output->dog_weight }} kg
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">犬種：
+                                                        {{--                                                純血犬とMix犬とで表示を変更--}}
+                                                        @if($output->dog_father === $output->dog_mother)
+                                                            {{ $output->dog_daddy }}
+                                                        @endif
+                                                        @if($output->dog_father !== $output->dog_mother)
+                                                            {{ $output->dog_daddy }}
+                                                            ×
+                                                            {{ $output->dog_mommy }}
+                                                        @endif
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -74,9 +103,9 @@
                             @endif
                         @endforeach
                     @endif
-                    @if($outputs !== null)
-                        {{ $outputs->links() }}
-                    @endif
+                    {{--                    @if($outputs !== null)--}}
+                    {{--                        {{ $outputs->links() }}--}}
+                    {{--                    @endif--}}
 
 
                 </div>
@@ -90,51 +119,83 @@
                                    class="list-group-item list-group-item-action">
 
                                     <div class="card-body">
-                                        <div class="mh-100 w-25 float-left">
-                                            {{--                                    <img src="{{ $dog_prof->dog_image }}" alt="愛犬画像"--}}
-                                            {{--                                         class="bd-placeholder-img mr-3 rounded" width="75" height="75">--}}
-                                            <svg class="bd-placeholder-img mr-3 rounded" width="75"
-                                                 height="75" xmlns="http://www.w3.org/2000/svg"
-                                                 preserveAspectRatio="xMidYMid slice"
-                                                 focusable="false"
-                                                 role="img" aria-label="Generic placeholder image">
-                                                <title>Generic placeholder image</title>
-                                                <rect width="100%" height="100%" fill="#868e96"/>
-                                            </svg>
-                                        </div>
-                                        <div class="row">
-                                            <div class="w-75 font-weight-bold">{{ $dog_prof->dog_name }}
-                                                @if($dog_prof->dog_gender === 0) くん@endif
-                                                @if($dog_prof->dog_gender === 1) ちゃん@endif
+                                        <div class="row g-0">
+                                            <div class="col-2">
+
+                                                {{--                                    <img src="{{ $dog_prof->dog_image }}" alt="愛犬画像"--}}
+                                                {{--                                         class="bd-placeholder-img mr-3 rounded" width="75" height="75">--}}
+                                                <svg class="bd-placeholder-img rounded"
+                                                     width="60"
+                                                     height="60"
+                                                     xmlns="http://www.w3.org/2000/svg"
+                                                     preserveAspectRatio="xMidYMid slice"
+                                                     focusable="false"
+                                                     role="img"
+                                                     aria-label="Generic placeholder image">
+                                                    <title>Generic placeholder image</title>
+                                                    <rect width="100%" height="100%"
+                                                          fill="#868e96"/>
+                                                </svg>
                                             </div>
-                                            <div class="w-25">
-                                                <object>
-                                                    <a class="btn btn-primary btn-sm rounded-pill"
-                                                       href="{{ route('mypage', ['user_id' => $dog_prof->user_id]) }}">フォロー</a>
-                                                </object>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="w-25">{{ $dog_prof->location }}</div>
-                                            <div class="w-25">
-                                                {{ age($dog_prof->user_id) }}
-                                                歳
-                                            </div>
-                                            <div class="w-25">
-                                                {{ $dog_prof->dog_weight }} kg
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="w-100">犬種：
-                                                {{--純血犬とMix犬とで表示を変更--}}
-                                                @if($dog_prof->dog_father === $dog_prof->dog_mother)
-                                                    {{ $dog_prof->dog_daddy }}
-                                                @endif
-                                                @if($dog_prof->dog_father !== $dog_prof->dog_mother)
-                                                    {{ $dog_prof->dog_daddy }}
-                                                    ×
-                                                    {{ $dog_prof->dog_mommy }}
-                                                @endif
+                                            <div class="col-10">
+
+                                                <div class="row d-flex">
+                                                    <div class="col-7 font-weight-bold">{{ $dog_prof->dog_name }}
+                                                        {{ nameTitle($dog_prof->dog_gender) }}
+                                                    </div>
+                                                    <div class="col-5">
+                                                        @if($dog_prof->follow === 0)
+                                                            <object>
+                                                                <form method="post"
+                                                                      action="{{ route('follow', ['user_id' => $user_id]) }}">
+                                                                    {{ csrf_field() }}
+                                                                    <input type="hidden" name="id"
+                                                                           value="{{ $dog_prof->user_id }}">
+                                                                    <button class="btn btn-primary btn-sm rounded-pill"
+                                                                            type="submit">フォロー
+                                                                    </button>
+                                                                </form>
+                                                            </object>
+                                                        @endif
+                                                        @if($dog_prof->follow === 1)
+                                                            <object>
+                                                                <form method="post"
+                                                                      action="{{ route('unfollow', ['user_id' => $user_id]) }}">
+                                                                    {{ csrf_field() }}
+
+                                                                    <input type="hidden" name="id"
+                                                                           value="{{ $dog_prof->user_id }}">
+                                                                    <button class="btn btn-danger btn-sm rounded-pill"
+                                                                            type="submit">フォロー解除
+                                                                    </button>
+                                                                </form>
+                                                            </object>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">{{ $dog_prof->location }}</div>
+                                                    <div class="col">
+                                                        {{ age($dog_prof->dog_birthday) }}
+                                                        歳
+                                                    </div>
+                                                    <div class="col">
+                                                        {{ $dog_prof->dog_weight }} kg
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">犬種：
+                                                        {{--純血犬とMix犬とで表示を変更--}}
+                                                        @if($dog_prof->dog_daddy === $dog_prof->dog_mommy)
+                                                            {{ $dog_prof->dog_daddy }}
+                                                        @endif
+                                                        @if($dog_prof->dog_daddy !== $dog_prof->dog_mommy)
+                                                            {{ $dog_prof->dog_daddy }}
+                                                            ×
+                                                            {{ $dog_prof->dog_mommy }}
+                                                        @endif
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -142,9 +203,9 @@
                             @endif
                         @endforeach
                     @endif
-                    @if($profiles !== null)
-                        {{ $profiles->links() }}
-                    @endif
+                    {{--                    @if($profiles !== null)--}}
+                    {{--                        {{ $profiles->links() }}--}}
+                    {{--                    @endif--}}
                 </div>
             </div>
         </div>

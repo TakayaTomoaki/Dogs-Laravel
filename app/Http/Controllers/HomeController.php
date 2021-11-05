@@ -8,6 +8,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -21,6 +22,8 @@ class HomeController extends Controller
         $this->middleware('auth');
     }
 
+
+
     /**
      * Show the application dashboard.
      *
@@ -30,31 +33,44 @@ class HomeController extends Controller
     public function add(Request $request): Renderable
     {
         $user_id = Auth::id();
-        return view('home', ['user_id' => $user_id]);
+
+        $sql = <<<SQL
+SELECT id,user_id,body,image,created_at,
+        (SELECT dog_name FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_name,
+        (SELECT dog_gender FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_gender,
+        (SELECT COUNT(user_id) FROM nices WHERE share_id = shares.id) AS nice,
+        (SELECT COUNT(user_id) FROM comments WHERE share_id = shares.id) AS comment,
+        (SELECT COUNT(*) FROM nices WHERE user_id = $user_id AND share_id = shares.id) AS count
+FROM shares
+WHERE user_id IN (SELECT receiver FROM follows WHERE follower = $user_id)
+ORDER BY created_at DESC
+LIMIT 10
+SQL;
+        $shares = DB::select($sql);
+
+        return view('home', compact('user_id', 'shares'));
+
     }
 
-    public function store(Request $request): RedirectResponse
+
+
+
+
+
+
+    public function index(Request $request)
     {
-        $post = $request->post();
-        if ($post['body'] === null) {
-            return back();
-        }
-
         $user_id = Auth::id();
-        $share = new Share();
+        $count = $_POST['count'];
 
-        if (!empty($post['image'])) {
-            $path = $post['image']->store('public/image');
-            $share->image = basename($path);
-        } else {
-            $share->image = null;
-        }
+        $sql = <<<SQL
+SELECT id,user_id,body,image,created_at,(SELECT dog_name FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_name,(SELECT dog_gender FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_gender,(SELECT COUNT(user_id) FROM nices WHERE share_id = shares.id) AS nice,(SELECT COUNT(user_id) FROM comments WHERE share_id = shares.id) AS comment,(SELECT COUNT(*) FROM nices WHERE user_id = $user_id AND share_id = shares.id) AS count FROM shares WHERE user_id IN (SELECT receiver FROM follows WHERE follower = $user_id) ORDER BY created_at DESC LIMIT $count, 10
+SQL;
+        $shares = DB::select($sql);
 
-        $share->user_id = $user_id;
-        $share->body = $post['body'];
-        $share->save();
+        return response()->json($shares);
 
-        return back();
     }
+
 
 }
