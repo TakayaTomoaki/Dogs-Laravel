@@ -4,22 +4,22 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-8">
-        <div class="card m-b-md">
-          <div class="card-header">マイページ</div>
-
-          <div class="card-body">
-            <div class="links">
-              <a href="{{ route( 'home') }}">ホーム</a><br>
-              <a href="{{ route( 'mypage', ['user_id' => $user_id]) }}">マイページ</a><br>
-              <a href="{{ route( 'search') }}">検索</a><br>
-              <a href="{{ route( 'notice', ['user_id' => $user_id]) }}">通知</a><br>
-              <a href="{{ route( 'messages', ['user_id' => $user_id]) }}">メッセージ</a><br>
-              <a href="{{ route( 'setup', ['user_id' => $user_id]) }}">設定</a>
+        <div class="card">
+          <div class="card-header">
+            <div class="row justify-content-between">
+              <div class="col">
+                プロフィール
+              </div>
+              {{--ユーザー情報によりボタン表示を変更--}}
+              @if($user_id === (int)Auth::id())
+                <div class="btn btn-secondary btn-sm">
+                  <a href="{{ route('create') }}"
+                     class="btn-secondary">プロフィール設定</a>
+                </div>
+              @endif
             </div>
           </div>
-        </div>
-        <div class="card">
-          <div class="card-header">プロフィール</div>
+
           <div class="card-body">
             <div class="form-group row">
               <div class="col-md-6">愛犬ネーム ： </div>
@@ -42,11 +42,6 @@
             <div class="form-group row">
               <div class="col-md-6">愛犬紹介欄 ： </div>
             </div>
-          </div>
-        </div>
-        <div class="d-flex justify-content-end">
-          <div class="btn btn-primary">
-            <a href="{{ action('MypageController@create') }}" class="btn-primary">プロフィール設定</a>
           </div>
         </div>
       </div>
