@@ -20,6 +20,8 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/common.css') }}" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
 </head>
 
 <body>
@@ -38,14 +40,13 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
-                        <div class="links">
+                        <li class="links">
                             <a href="{{ route( 'home') }}">ホーム</a>
-                            <a href="{{ route( 'mypage', ['user_id' => $user_id]) }}">マイページ</a>
+                            <a href="{{ route( 'mypage', ['user_id' => Auth::id()]) }}">マイページ</a>
                             <a href="{{ route( 'search') }}">検索</a>
-                            <a href="{{ route( 'notice', ['user_id' => $user_id]) }}">通知</a>
-                            <a href="{{ route( 'messages', ['user_id' => $user_id]) }}">メッセージ</a>
-                            <a href="{{ route( 'setup', ['user_id' => $user_id]) }}">設定</a>
-                        </div>
+                            <a href="{{ route( 'notice', ['user_id' => Auth::id()]) }}">通知</a>
+                            <a href="{{ route( 'setup', ['user_id' => Auth::id()]) }}">設定</a>
+                        </li>
                     </ul>
                 </div>
             </div>
