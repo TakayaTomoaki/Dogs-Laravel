@@ -1,15 +1,15 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace App\Http\Controllers;
 
-use App\Models\Follow;
+use App\Models\Like;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class FollowController extends Controller
+class LikeController extends Controller
 {
     /**
      * @param  Request  $request
@@ -17,22 +17,29 @@ class FollowController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $follow = new Follow;
-        $user_id = Auth::id();
         $post = $request->post();
+        if ($post['id'] === null) {
+            return back();
+        }
 
-        $follow->follower = $user_id;
-        $follow->receiver = $post['id'];
+        $like = new Like();
+        $user_id = Auth::id();
 
-        $log = $follow->save();
-        Log::debug($follow . 'followの保存に成功しました。');
+        $like->user_id = $user_id;
+        $like->comment_id = $post['id'];
+
+        $log = $like->save();
+        Log::debug($like . 'likeの保存に成功しました。');
 
         if ($log === false) {
-            Log::debug($follow . 'followの保存に失敗しました。');
+            Log::debug($like . 'likeの保存に失敗しました。');
             return back()->with('保存に失敗しました。もう一度、保存ボタンを押して下さい。');
         }
+
         return back();
     }
+
+
 
 
     /**
@@ -46,16 +53,16 @@ class FollowController extends Controller
 
         $sql = <<<SQL
 DELETE
-FROM follows
-WHERE follower = $user_id
-AND receiver = $post[id]
+FROM likes
+WHERE user_id = $user_id
+AND comment_id = $post[id]
 SQL;
 
         $log = DB::DELETE($sql);
-        Log::debug($user_id . $post['id'] . 'unfollowの削除に成功しました。');
+        Log::debug($user_id . $post['id'] . 'いいねの削除に成功しました。');
 
         if ($log === false) {
-            Log::debug($user_id . $post['id'] . 'unfollowの削除に失敗しました。');
+            Log::debug($user_id . $post['id'] . 'いいねの削除に失敗しました。');
             return back()->with('通信エラー。もう一度、ボタンを押して下さい。');
         }
         return back();

@@ -56,15 +56,6 @@ class Dogs_profile extends Model
         'dog_name', 'location', 'dog_birthday', 'dog_gender', 'dog_weight', 'dog_father', 'dog_daddy', 'dog_mother', 'dog_mommy'
     ];
 
-    public static $rules = [
-        'dog_name' => 'required',
-        'dog_birthday' => 'required',
-        'dog_gender' => 'required',
-        'dog_weight' => 'required',
-        'dog_father' => 'required',
-        'dog_mother' => 'required',
-    ];
-
     public function user_id(): BelongsTo
     {
         return $this->belongsTo('App\User');

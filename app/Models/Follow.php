@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Models;
 
@@ -13,6 +13,12 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Follow newQuery()
  * @method static Builder|Follow query()
  * @mixin Eloquent
+ * @property int $id
+ * @property int $follower
+ * @property int $receiver
+ * @method static Builder|Follow whereFollower($value)
+ * @method static Builder|Follow whereId($value)
+ * @method static Builder|Follow whereReceiver($value)
  */
 class Follow extends Model
 {

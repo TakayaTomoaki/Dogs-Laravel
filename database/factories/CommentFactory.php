@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
@@ -9,6 +9,6 @@ $factory->define(Comment::class, function (Faker $faker) {
     return [
         'user_id' => $faker->numberBetween(1, 200),
         'share_id' => $faker->numberBetween(1, 500),
-        'comment' => $faker->realText(20),
+        'comment' => $faker->realText(50),
     ];
 });

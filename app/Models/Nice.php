@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Models;
 
@@ -28,4 +28,8 @@ use Illuminate\Support\Carbon;
 class Nice extends Model
 {
     public $timestamps = false;
+
+    protected $fillable = [
+      'user_id', 'share_id'
+    ];
 }
