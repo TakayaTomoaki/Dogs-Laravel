@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /** @var Factory $factory */
 
@@ -7,17 +7,16 @@ use App\Models\Dogs_profile;
 use Faker\Generator as Faker;
 use Illuminate\Database\Eloquent\Factory;
 
-
 $factory->define(Dogs_profile::class, function (Faker $faker) {
     $breed = 'D' . $faker->numberBetween($min = 1, $max = 173);
 
     $user_id = function () {
-            return factory(User::class)->create()->id;
-        };
+        return factory(User::class)->create()->id;
+    };
     $location = function (array $post) {
-            $pref = User::find($post['user_id'])->location;
+        $pref = User::find($post['user_id'])->location;
         return config('prefecture.prefs')[$pref];
-        };
+    };
 
     return [
         'user_id' => $user_id,
@@ -30,6 +29,6 @@ $factory->define(Dogs_profile::class, function (Faker $faker) {
         'dog_daddy' => config('dogbreed.breeds')[$breed],
         'dog_mother' => $breed,
         'dog_mommy' => config('dogbreed.breeds')[$breed],
-        'dog_introduction' => $faker->realText(50)
+        'dog_introduction' => $faker->realText(100)
     ];
 });
