@@ -1,4 +1,4 @@
-const mix = require('laravel-mix');
+const mix = require("laravel-mix");
 
 /*
  |--------------------------------------------------------------------------
@@ -11,15 +11,13 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js([
-    'resources/js/app.js',
-    'resources/js/jquery.js'
-    ], 'public/js')
+mix.js(["resources/js/app.js", "resources/js/jquery.js"], "public/js")
 
-   .sass('resources/sass/app.scss', 'public/css')
-   .sass('resources/sass/common.scss', 'public/css');
+    .sass("resources/sass/app.scss", "public/css")
+    .sass("resources/sass/common.scss", "public/css")
+    .version();
 
 mix.autoload({
-  vue: ['Vue', 'window.Vue'],
-  axios: ['axios', 'window.axios']
+    vue: ["Vue", "window.Vue"],
+    axios: ["axios", "window.axios"],
 });

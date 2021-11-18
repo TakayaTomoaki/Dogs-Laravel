@@ -50,7 +50,6 @@
                             <a href="{{ route( 'home') }}">ホーム</a>
                             <a href="{{ route( 'mypage', ['user_id' => Auth::id()]) }}">マイページ</a>
                             <a href="{{ route( 'search') }}">検索</a>
-                            <a href="{{ route( 'notice', ['user_id' => Auth::id()]) }}">通知</a>
                             <a href="{{ route( 'setup', ['user_id' => Auth::id()]) }}">設定</a>
                         </li>
                     </ul>

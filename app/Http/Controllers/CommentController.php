@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PostCommentRequest;
 use App\Models\Comment;
-use App\Models\Dogs_profile;
-use App\Models\Share;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
@@ -18,10 +17,16 @@ class CommentController extends Controller
 {
     /**
      * @param $id
-     * @return Application|Factory|View
+     * @return Application|Factory|RedirectResponse|View
      */
-    public function add($id){
+    public function add($id)
+    {
         $user_id = Auth::id();
+
+        $user = DB::table('dogs_profiles')
+        ->select("dog_image")
+        ->where('user_id', $user_id)
+        ->first();
 
         $sql1 = <<<SQL
 SELECT id, user_id, body, image, created_at,
@@ -32,35 +37,66 @@ FROM shares
 WHERE id = $id
 SQL;
         $shares = DB::select($sql1);
+        if ($shares === []) {
+            return redirect()->route('mypage', ['user_id' => $user_id]);
+        }
 
 
-        $dog = Dogs_profile::where('user_id', $shares[0]->user_id)->first();
+        $dog = DB::table('dogs_profiles')
+      ->select(
+          "id",
+          "user_id",
+          "dog_name",
+          "location",
+          "dog_birthday",
+          "dog_gender",
+          "dog_weight",
+          "dog_daddy",
+          "dog_mommy",
+          "dog_introduction",
+          "dog_image"
+      )
+      ->where('user_id', $shares[0]->user_id)
+      ->first();
+
+        if ($dog === null) {
+            return redirect()->route('create');
+        }
+
 
         $sql2 = <<<SQL
-SELECT comments.id, comments.user_id, comment, comments.created_at, dog_name, dog_gender
+SELECT id, user_id, comment, created_at,
+       (SELECT dog_name FROM dogs_profiles WHERE user_id = comments.user_id) AS dog_name,
+       (SELECT dog_gender FROM dogs_profiles WHERE user_id = comments.user_id) AS dog_gender,
+       (SELECT dog_image FROM dogs_profiles WHERE user_id = comments.user_id) AS dog_image,
+       (SELECT COUNT(*) FROM likes WHERE user_id = $user_id AND comment_id = comments.id) AS count,
+       (SELECT COUNT(user_id) FROM likes WHERE comment_id = comments.id) AS likeCount
 FROM comments
-LEFT JOIN dogs_profiles
-ON comments.user_id = dogs_profiles.user_id
-WHERE comments.share_id = $id
-ORDER BY comments.created_at DESC
+WHERE share_id = $id
+ORDER BY created_at DESC
 SQL;
         $comments = DB::SELECT($sql2);
 
-        if ($comments === null){
+
+        if ($comments === null) {
             $comments = null;
         }
 
-        return view('comment.index', compact('user_id','shares', 'comments', 'dog'));
+        return view('comment.index', compact('user_id', 'shares', 'comments', 'dog', 'user'));
     }
 
 
 
 
-
-    public function store(Request $request, $id): RedirectResponse
+    /**
+     * @param  PostCommentRequest  $request
+     * @param $id
+     * @return RedirectResponse
+     */
+    public function store(PostCommentRequest $request, $id): RedirectResponse
     {
-        $post = $request->post();
-        if ($post['comment'] === null){
+        $post = $request->validated();
+        if ($post['comment'] === null) {
             return back();
         }
 
@@ -70,11 +106,40 @@ SQL;
         $comment->share_id = $id;
         $comment->comment = $post['comment'];
         $log = $comment->save();
-        Log::debug($comment . 'commentの保存に成功しました。');
+        Log::debug($comment.'commentの保存に成功しました。');
 
         if ($log === false) {
-            Log::debug($comment . 'commentの保存に失敗しました。');
+            Log::debug($comment.'commentの保存に失敗しました。');
             return back()->with('保存に失敗しました。もう一度、保存ボタンを押して下さい。');
+        }
+
+        return back();
+    }
+
+
+
+
+
+    /**
+     * @param  Request  $request
+     * @return RedirectResponse
+     */
+    public function delete(Request $request): RedirectResponse
+    {
+        $user_id = Auth::id();
+        $post = $request->post();
+
+        $sql3 = <<<SQL
+DELETE
+FROM comments
+WHERE id = $post[id]
+SQL;
+        $log = DB::DELETE($sql3);
+        Log::debug($user_id.$post['id'].'commentの削除に成功しました。');
+
+        if ($log === false) {
+            Log::debug($user_id.$post['id'].'commentの削除に失敗しました。');
+            return back()->with('通信エラー。もう一度、ボタンを押して下さい。');
         }
 
         return back();
