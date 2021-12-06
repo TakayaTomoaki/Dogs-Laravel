@@ -7,7 +7,7 @@ use Faker\Generator as Faker;
 
 $factory->define(Share::class, function (Faker $faker) {
     return [
-        'user_id' => $faker->numberBetween(1, 200),
+        'user_id' => $faker->numberBetween(1, 300),
         'body' => $faker->realText(100),
     ];
 });

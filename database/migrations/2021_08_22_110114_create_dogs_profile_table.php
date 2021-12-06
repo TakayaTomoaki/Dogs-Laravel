@@ -22,9 +22,9 @@ class CreateDogsProfileTable extends Migration
             $table->date('dog_birthday');
             $table->boolean('dog_gender');
             $table->integer('dog_weight');
-            $table->string('dog_father');
+            $table->string('dog_father', 5);
             $table->string('dog_daddy', 30);
-            $table->string('dog_mother');
+            $table->string('dog_mother', 5);
             $table->string('dog_mommy', 30);
             $table->string('dog_introduction', 200);
             $table->string('dog_image')->nullable();
