@@ -6,11 +6,11 @@
 
 【ＵＲＬ】
    
-　http://3.21.186.94/　　　　　
+　http://3.21.186.94/
+
+　・Basic認証【ID】gest　　【pass】gest　　 
  
-　　・Basic認証【ID】gest　　【pass】gest　　 
- 
-　　・ログイン【ID】test1@test.com　【pass】password
+　・ログイン【ID】test1@test.com　【pass】password
 
 
 【概要】
