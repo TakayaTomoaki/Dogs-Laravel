@@ -12,6 +12,6 @@ class SharesTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(Share::class, 500)->create();
+        factory(Share::class, 1000)->create();
     }
 }

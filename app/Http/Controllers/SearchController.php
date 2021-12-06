@@ -41,6 +41,7 @@ SELECT user_id, dog_name, dog_gender, dog_weight, dog_birthday, dog_father, dog_
 FROM dogs_profiles
 WHERE MATCH(dog_name, location, dog_daddy, dog_mommy, dog_introduction)
     AGAINST('$search_terms' IN BOOLEAN MODE)
+ORDER BY created_at DESC
 SQL;
 
             $outputs = DB::SELECT($sql);
@@ -55,6 +56,7 @@ SELECT user_id, dog_name, dog_birthday, dog_gender, dog_weight, dog_birthday, do
        (SELECT count(*) FROM follows WHERE receiver = user_id AND follower = $user_id) AS follow
 FROM dogs_profiles
 WHERE location = '$userLocation->location'
+ORDER BY created_at DESC
 SQL;
 
         $profiles = DB::SELECT($sql2);

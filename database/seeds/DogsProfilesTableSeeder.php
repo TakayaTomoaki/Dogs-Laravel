@@ -12,6 +12,6 @@ class DogsProfilesTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(Dogs_profile::class, 200)->create();
+        factory(Dogs_profile::class, 300)->create();
     }
 }

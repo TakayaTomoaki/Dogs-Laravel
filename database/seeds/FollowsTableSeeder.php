@@ -13,25 +13,40 @@ class FollowsTableSeeder extends Seeder
      */
     public function run(Faker $faker)
     {
-        for ($i = 1; $i <= 200; $i++) {
+        for ($i = 1; $i <= 300; $i++) {
             DB::table('follows')->insert([
-          [
-            'follower' => $i,
-            'receiver' => $faker->numberBetween(1, 40)
-          ],[
-            'follower' => $i,
-            'receiver' => $faker->numberBetween(41, 80)
-          ],[
-            'follower' => $i,
-            'receiver' => $faker->numberBetween(81, 120)
-          ],[
-            'follower' => $i,
-            'receiver' => $faker->numberBetween(121, 160)
-          ],[
-            'follower' => $i,
-            'receiver' => $faker->numberBetween(161, 200)
-          ]
-        ]);
+        [
+          'follower' => $i,
+          'receiver' => $faker->numberBetween(1, 30)
+        ], [
+          'follower' => $i,
+          'receiver' => $faker->numberBetween(31, 60)
+        ], [
+          'follower' => $i,
+          'receiver' => $faker->numberBetween(61, 90)
+        ], [
+          'follower' => $i,
+          'receiver' => $faker->numberBetween(91, 120)
+        ], [
+          'follower' => $i,
+          'receiver' => $faker->numberBetween(121, 150)
+        ], [
+          'follower' => $i,
+          'receiver' => $faker->numberBetween(151, 180)
+        ], [
+          'follower' => $i,
+          'receiver' => $faker->numberBetween(181, 210)
+        ], [
+          'follower' => $i,
+          'receiver' => $faker->numberBetween(211, 240)
+        ], [
+          'follower' => $i,
+          'receiver' => $faker->numberBetween(241, 270)
+        ], [
+          'follower' => $i,
+          'receiver' => $faker->numberBetween(271, 300)
+        ]
+      ]);
         }
     }
 }

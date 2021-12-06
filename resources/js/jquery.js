@@ -147,9 +147,14 @@ $(function () {
                         <div class="mb-0 ml-3 small">`,
                     ];
 
-                    let date = new Date(obj.created_at);
+                    let date = new Date(obj.created_at.replace(/-/g, "/"));
                     let monthDay =
-                        date.getMonth() + 1 + "月" + date.getDate() + "日";
+                        Number(date.getMonth()) +
+                        1 +
+                        "月" +
+                        Number(date.getDate()) +
+                        "日";
+
                     add_content += [
                         `
                         ${monthDay}
