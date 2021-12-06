@@ -28,7 +28,7 @@
                 {{ route('unfollow', ['user_id' => $user_id]) }}@endif">
                   {{ csrf_field() }}
                   <input type="hidden" name="id" value="{{ $user->user_id }}">
-                  @if($user->follow === 0)
+                  @if($user->follow == 0)
                     <button class="btn btn-primary btn-sm rounded-pill" type="submit">フォローする</button>
                   @else
                     <button class="btn btn-danger btn-sm rounded-pill" type="submit">フォロー解除</button>

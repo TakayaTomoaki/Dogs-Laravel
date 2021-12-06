@@ -241,8 +241,8 @@ SQL;
         $user_id = Auth::id();
 
         $sql = <<<SQL
-SELECT user_id,dog_name,dog_birthday,dog_gender,dog_weight,dog_daddy,dog_mommy,location,dog_image,
-              (SELECT count(*) FROM follows WHERE receiver = user_id AND follower = $user_id) AS follow
+SELECT user_id, dog_name, dog_birthday, dog_gender, dog_weight, dog_daddy, dog_mommy, location, dog_image,
+       (SELECT count(*) FROM follows WHERE receiver = user_id AND follower = $user_id) AS follow
 FROM dogs_profiles
 WHERE user_id IN (SELECT receiver FROM follows WHERE follower = $id)
 SQL;
@@ -261,8 +261,8 @@ SQL;
         $user_id = Auth::id();
 
         $sql = <<<SQL
-SELECT user_id,dog_name,dog_birthday,dog_gender,dog_weight,dog_daddy,dog_mommy,location,dog_image,
-              (SELECT count(*) FROM follows WHERE receiver = user_id AND follower = $id) AS follow
+SELECT user_id, dog_name, dog_birthday, dog_gender, dog_weight, dog_daddy, dog_mommy, location, dog_image,
+       (SELECT count(*) FROM follows WHERE receiver = user_id AND follower = $user_id) AS follow
 FROM dogs_profiles
 WHERE user_id IN (SELECT follower FROM follows WHERE receiver = $id)
 SQL;

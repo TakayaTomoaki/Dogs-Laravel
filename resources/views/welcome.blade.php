@@ -21,7 +21,7 @@
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
 
 <body>
-<div class="flex-center position-ref full-height">
+<div class="flex-center position-ref">
   @if (Route::has('login'))
     <div class="top-right links">
       @auth
@@ -36,7 +36,7 @@
     </div>
   @endif
 
-  <div class="row align-items-center justify-content-center">
+  <div class="row align-items-center justify-content-center mt-5" style="height:90vh;">
     <div class="content">
       <div class="title m-b-md font-weight-bold font-italic">
         Dogs
