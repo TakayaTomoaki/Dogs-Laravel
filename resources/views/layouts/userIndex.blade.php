@@ -39,12 +39,12 @@
           </div>
         </div>
         <div class="row">
-          <div class="col">{{ $user->location }}</div>
-          <div class="col">{{ age($user->dog_birthday) }}</div>
-          <div class="col">{{ $user->dog_weight }} kg</div>
+          <div class="col small">{{ $user->location }}</div>
+          <div class="col small">{{ age($user->dog_birthday) }}</div>
+          <div class="col small">{{ $user->dog_weight }} kg</div>
         </div>
         <div class="row">
-          <div class="col">犬種：
+          <div class="col small">犬種：
             {{--純血犬とMix犬とで表示を変更--}}
             @if($user->dog_daddy === $user->dog_mommy)
               {{ $user->dog_daddy }}

@@ -85,7 +85,7 @@
                           {{ csrf_field() }}
                           <input type="hidden" name="id" value="{{ $shares[0]->id }}">
                           <button type="submit" class="dropdown-item btn">
-                            削除
+                            削除する
                           </button>
                         </form>
                       </div>
