@@ -6,7 +6,7 @@
 
 【URL】
    
-　http://3.21.186.94/
+　https://dogs-connect.net/
 
 
 【概要】
