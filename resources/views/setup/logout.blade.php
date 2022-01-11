@@ -12,24 +12,18 @@
             <div class="col my-4 py-1">
               <h5 class="text-center">ログアウトしますか？</h5>
             </div>
+
             <div class="row text-center my-4">
-              <div class="col">
+              <div class="col mx-4">
                 <form action="{{ route('logout') }}" method="POST">
                   @csrf
-                  <button type="submit" class="btn btn-primary" style="width:130px">
+                  <button type="submit" class="btn btn-primary btn-block">
                     ログアウトする
-                  </button>
-                </form>
-
-              </div>
-              <div class="col">
-                <form action="{{ route('setup', ['user_id'=> $user_id]) }}" method="GET">
-                  <button type="submit" class="btn btn-primary" style="width:130px">
-                    戻る
                   </button>
                 </form>
               </div>
             </div>
+
           </div>
 
         </div>
