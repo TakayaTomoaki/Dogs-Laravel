@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 class ShareController extends Controller
 {
     /**
-     * @param  PostShareRequest  $request
+     * @param PostShareRequest $request
      * @return RedirectResponse
      */
     public function store(PostShareRequest $request): RedirectResponse
@@ -23,7 +23,7 @@ class ShareController extends Controller
         $share = new Share;
 
         //postから画像ファイルがあるかを判定
-        if (!empty($post['image'])) {
+        if (! empty($post['image'])) {
             $path = $post['image']->store('public/image');
             $share->image = basename($path);
         } else {
@@ -45,24 +45,20 @@ class ShareController extends Controller
 
 
     /**
-     * @param  Request  $request
+     * @param Request $request
      * @return RedirectResponse
      */
     public function delete(Request $request): RedirectResponse
     {
         $user_id = Auth::id();
-        $post = $request->post();
+        $post_id = $request->post('id');
 
-        $sql = <<<SQL
-DELETE
-FROM shares
-WHERE id = $post[id]
-SQL;
-        $log = DB::DELETE($sql);
-        Log::debug($user_id.$post['id'].'shareの削除に成功しました。');
+        $log = Share::where('id', $post_id)->delete();
+
+        Log::debug($user_id.$post_id.'shareの削除に成功しました。');
 
         if ($log === false) {
-            Log::debug($user_id.$post['id'].'shareの削除に失敗しました。');
+            Log::debug($user_id.$post_id.'shareの削除に失敗しました。');
             return back()->with('通信エラー。もう一度、ボタンを押して下さい。');
         }
 
