@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use App\Models\Follow;
 use Faker\Generator as Faker;

@@ -12,17 +12,17 @@ use Illuminate\Support\Facades\Log;
 class FollowController extends Controller
 {
     /**
-     * @param  Request  $request
+     * @param Request $request
      * @return RedirectResponse
      */
     public function store(Request $request): RedirectResponse
     {
         $follow = new Follow;
         $user_id = Auth::id();
-        $post = $request->post();
+        $post_id = $request->post('id');
 
         $follow->follower = $user_id;
-        $follow->receiver = $post['id'];
+        $follow->receiver = $post_id;
 
         $log = $follow->save();
         Log::debug($follow . 'followの保存に成功しました。');
@@ -36,26 +36,26 @@ class FollowController extends Controller
 
 
     /**
-     * @param  Request  $request
+     * @param Request $request
      * @return RedirectResponse
      */
     public function delete(Request $request): RedirectResponse
     {
         $user_id = Auth::id();
-        $post = $request->post();
+        $post_id = $request->post('id');
 
         $sql = <<<SQL
 DELETE
 FROM follows
 WHERE follower = $user_id
-AND receiver = $post[id]
+AND receiver = $post_id
 SQL;
 
         $log = DB::DELETE($sql);
-        Log::debug($user_id . $post['id'] . 'unfollowの削除に成功しました。');
+        Log::debug($user_id . $post_id . 'unfollowの削除に成功しました。');
 
         if ($log === false) {
-            Log::debug($user_id . $post['id'] . 'unfollowの削除に失敗しました。');
+            Log::debug($user_id . $post_id . 'unfollowの削除に失敗しました。');
             return back()->with('通信エラー。もう一度、ボタンを押して下さい。');
         }
         return back();

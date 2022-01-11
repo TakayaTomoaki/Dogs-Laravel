@@ -7,7 +7,7 @@
 
         <div class="card m-b-md">
           <div class="card-header">ホーム</div>
-          <div class="card-body">
+          <div class="card-body pl-2">
             @if (count($errors) > 0)
               <ul class="text-danger">
                 @foreach($errors->all() as $e)
@@ -18,16 +18,17 @@
 
             <div class="media">
               <div class="object">
-                <a href="{{ route('mypage', ['user_id' => $user_id])}}">
+                <a href="{{ route('mypage', ['user_id' => $user_id])}}" class="pl-2">
 
                   @if(!empty($dog->dog_image))
-                    <img src="{{ asset('storage/dog_image/'.$dog->dog_image) }}" alt="dog_image" class="bd-placeholder-img rounded mr-3" width="60" height="60">
+                    <div class="pl-3 pr-2">
+                      <img src="{{ asset('storage/dog_image/'.$dog->dog_image) }}" alt="dog_image" class="bd-placeholder-img rounded mr-2" width="60" height="60">
+                    </div>
                   @else
-                    <svg class="bd-placeholder-img rounded align-self-start mr-2" width="60" height="60" xmlns="http://www.w3.org/2000/svg"
-                         preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Generic placeholder image">
-                      <title>Generic placeholder image</title>
-                      <rect width="100%" height="100%" fill="#868e96"/>
-                    </svg>
+                    <div class="fa-stack d-flex" style="font-size:34.3px; margin:0 3.14px">
+                      <i class="fas fa-square fa-stack-2x" style="color:@if($dog->dog_gender === 0)deepskyblue @else hotpink @endif"></i>
+                      <i class="fas fa-dog fa-stack-1x fa-inverse fa-lg" style="color:white" ></i>
+                    </div>
                   @endif
                 </a>
               </div>

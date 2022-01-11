@@ -34,27 +34,26 @@ class HomeController extends Controller
         $user_id = Auth::id();
 
         $dog = DB::table('dogs_profiles')
-          ->select('dog_image')->where('user_id', $user_id)->first();
+          ->select('dog_gender', 'dog_image')->where('user_id', $user_id)->first();
 
 
         $sql = <<<SQL
-SELECT id,user_id,body,image,created_at,
-        (SELECT dog_name FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_name,
-        (SELECT dog_gender FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_gender,
-        (SELECT dog_image FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_image,
-        (SELECT COUNT(user_id) FROM nices WHERE share_id = shares.id) AS nice,
-        (SELECT COUNT(user_id) FROM comments WHERE share_id = shares.id) AS comment,
-        (SELECT COUNT(*) FROM nices WHERE user_id = $user_id AND share_id = shares.id) AS count
-FROM shares
-WHERE user_id IN (SELECT receiver FROM follows WHERE follower = $user_id) OR user_id = $user_id
+SELECT s.id,s.user_id,body,image,s.created_at,dog_name,dog_gender,dog_image,
+        (SELECT COUNT(user_id) FROM nices WHERE share_id = s.id) AS nice,
+        (SELECT COUNT(user_id) FROM comments WHERE share_id = s.id) AS comment,
+        (SELECT COUNT(*) FROM nices WHERE user_id = $user_id AND share_id = s.id) AS count
+FROM shares AS s
+INNER JOIN dogs_profiles AS d ON s.user_id = d.user_id
+WHERE (s.user_id IN (SELECT receiver FROM follows WHERE follower = $user_id) OR s.user_id = $user_id) AND deleted_at IS NULL
 ORDER BY created_at DESC
 LIMIT 20
 SQL;
+
         $shares = DB::select($sql);
 //        dd($shares);
 
 
-        if (!empty($shares) && $shares[0]->dog_name === null) {
+        if (! empty($shares) && $shares[0]->dog_name === null) {
             return redirect()->route('create');
         }
 
@@ -74,7 +73,7 @@ SQL;
         $user_id = Auth::id();
 
         $sql = <<<SQL
-SELECT COUNT(*) AS count
+SELECT COUNT(id) AS count
 FROM shares
 WHERE user_id IN (SELECT receiver FROM follows WHERE follower = $user_id) OR user_id = $user_id
 SQL;
@@ -87,18 +86,17 @@ SQL;
         }
 
         $sql2 = <<<SQL
-SELECT id,user_id,body,image,created_at,
-       (SELECT dog_name FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_name,
-       (SELECT dog_gender FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_gender,
-       (SELECT dog_image FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_image,
-       (SELECT COUNT(user_id) FROM nices WHERE share_id = shares.id) AS nice,
-       (SELECT COUNT(user_id) FROM comments WHERE share_id = shares.id) AS comment,
-       (SELECT COUNT(*) FROM nices WHERE user_id = $user_id AND share_id = shares.id) AS count
-FROM shares
-WHERE user_id IN (SELECT receiver FROM follows WHERE follower = $user_id) OR user_id = $user_id
+SELECT s.id,s.user_id,body,image,s.created_at,dog_name,dog_gender,dog_image,
+        (SELECT COUNT(user_id) FROM nices WHERE share_id = s.id) AS nice,
+        (SELECT COUNT(user_id) FROM comments WHERE share_id = s.id) AS comment,
+        (SELECT COUNT(*) FROM nices WHERE user_id = $user_id AND share_id = s.id) AS count
+FROM shares AS s
+INNER JOIN dogs_profiles AS d ON s.user_id = d.user_id
+WHERE (s.user_id IN (SELECT receiver FROM follows WHERE follower = $user_id) OR s.user_id = $user_id) AND deleted_at IS NULL
 ORDER BY created_at DESC
 LIMIT $postCount, 20
 SQL;
+
         $shares = DB::select($sql2);
 
         return response()->json([$shares, $user_id]);

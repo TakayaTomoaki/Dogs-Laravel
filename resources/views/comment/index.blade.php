@@ -9,16 +9,17 @@
           <div class="card-header">コメント</div>
 
           {{--投稿の表示--}}
-          <div class="card-body">
+          <div class="card-body pl-2">
             <div class="media">
               @if($dog->dog_image === null)
-              <svg class="bd-placeholder-img rounded  mr-3" width="60" height="60" xmlns="http://www.w3.org/2000/svg"
-                   preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Generic placeholder image">
-                <title>Generic placeholder image</title>
-                <rect width="100%" height="100%" fill="#868e96"/>
-              </svg>
+                <div class="fa-stack d-flex" style="font-size:34.3px; margin:0 3.14px">
+                  <i class="fas fa-square fa-stack-2x" style="color:@if($dog->dog_gender === 0)deepskyblue @else hotpink @endif"></i>
+                  <i class="fas fa-dog fa-stack-1x fa-inverse fa-lg" style="color:white"></i>
+                </div>
               @else
-                <img src="{{ asset('storage/dog_image/'.$dog->dog_image) }}" alt="dog_image" class="bd-placeholder-img rounded mr-3" width="60" height="60">
+                <div class="pl-3 pr-2">
+                <img src="{{ asset('storage/dog_image/'.$dog->dog_image) }}" alt="dog_image" class="bd-placeholder-img rounded mr-2" width="60" height="60">
+                </div>
               @endif
 
               <div class="media-body">
@@ -85,7 +86,7 @@
                           {{ csrf_field() }}
                           <input type="hidden" name="id" value="{{ $shares[0]->id }}">
                           <button type="submit" class="dropdown-item btn">
-                            削除
+                            削除する
                           </button>
                         </form>
                       </div>
@@ -98,20 +99,21 @@
           </div>
           {{--コメント投稿欄--}}
           <hr class="my-0">
-          <div class="card-body d-flex">
+          <div class="card-body d-flex pl-2">
 
             <div class="media align-items-center">
               @if($user->dog_image === null)
-              <svg class="bd-placeholder-img mr-4 rounded" width="60" height="60" xmlns="http://www.w3.org/2000/svg"
-                   preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Generic placeholder image">
-                <title>Generic placeholder image</title>
-                <rect width="100%" height="100%" fill="#868e96"/>
-              </svg>
+                <div class="fa-stack d-flex" style="font-size:34.3px; margin:0 3.14px">
+                  <i class="fas fa-square fa-stack-2x" style="color:@if($user->dog_gender === 0)deepskyblue @else hotpink @endif"></i>
+                  <i class="fas fa-dog fa-stack-1x fa-inverse fa-lg" style="color:white"></i>
+                </div>
               @else
-                <img src="{{ asset('storage/dog_image/'.$user->dog_image) }}" alt="dog_image" class="bd-placeholder-img rounded mr-3" width="60" height="60">
+                <div class="pl-3 pr-2">
+                  <img src="{{ asset('storage/dog_image/'.$user->dog_image) }}" alt="dog_image" class="bd-placeholder-img rounded mr-2" width="60" height="60">
+                </div>
               @endif
 
-              <div class="media-body mr-0">
+              <div class="media-body mr-0 ml-1">
                 <form action="{{ route('comment_store', ['id' => $shares[0]->id]) }}" method="post" enctype="multipart/form-data" class="form-row">
                   <div class="input-group">
                     <textarea class="form-control @error('text') is-invalid @enderror" name="comment" required autocomplete="text" rows="2" cols="100" maxlength="100" aria-describedby="buttonAddon" placeholder="コメント入力">{{ old('text') }}</textarea>
@@ -130,18 +132,19 @@
           @if ($comments !== null)
             @foreach($comments as $comment)
               <hr class="my-0">
-              <div class="card-body py-3">
+              <div class="card-body pl-2">
 
                 <div class="media">
 
                   @if($comment->dog_image === null)
-                  <svg class="bd-placeholder-img mr-3 rounded" width="60" height="60" xmlns="http://www.w3.org/2000/svg"
-                       preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Generic placeholder image">
-                    <title>Generic placeholder image</title>
-                    <rect width="100%" height="100%" fill="#868e96"/>
-                  </svg>
+                    <div class="fa-stack d-flex" style="font-size:34.3px; margin:0 3.14px">
+                      <i class="fas fa-square fa-stack-2x" style="color:@if($comment->dog_gender === 0)deepskyblue @else hotpink @endif"></i>
+                      <i class="fas fa-dog fa-stack-1x fa-inverse fa-lg" style="color:white"></i>
+                    </div>
                   @else
-                    <img src="{{ asset('storage/dog_image/'.$comment->dog_image) }}" alt="dog_image" class="bd-placeholder-img rounded mr-3" width="60" height="60">
+                    <div class="pl-3 pr-2">
+                      <img src="{{ asset('storage/dog_image/'.$comment->dog_image) }}" alt="dog_image" class="bd-placeholder-img rounded mr-2" width="60" height="60">
+                    </div>
                   @endif
 
                   <div class="media-body">

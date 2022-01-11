@@ -7,17 +7,24 @@
         <div class="card">
           <div class="card-header">アカウント設定</div>
 
-          <div class="card-body px-0 py-0">
-            <div class="list-group list-group-flush">
-              <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="list-group-item list-group-item-action">
-                  ログアウトする
-                </button>
-              </form>
-            </div>
-          </div>
+          <div class="card-body">
 
+            <div class="col my-4 py-1">
+              <h5 class="text-center">ログアウトしますか？</h5>
+            </div>
+
+            <div class="row text-center my-4">
+              <div class="col mx-4">
+                <form action="{{ route('logout') }}" method="POST">
+                  @csrf
+                  <button type="submit" class="btn btn-primary btn-block">
+                    ログアウトする
+                  </button>
+                </form>
+              </div>
+            </div>
+
+          </div>
 
         </div>
       </div>

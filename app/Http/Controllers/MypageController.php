@@ -36,18 +36,16 @@ SQL;
 
         $dog_prof = DB::SELECT($sql);
 
-        //投稿一覧の取得
+        //投稿一覧タブの取得
         $sql2 = <<<SQL
-SELECT id,user_id,body,image,created_at,
-        (SELECT dog_name FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_name,
-        (SELECT dog_gender FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_gender,
-        (SELECT dog_image FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_image,
-        (SELECT COUNT(user_id) FROM nices WHERE share_id = shares.id) AS nice,
-        (SELECT COUNT(user_id) FROM comments WHERE share_id = shares.id) AS comment,
-        (SELECT COUNT(*) FROM nices WHERE user_id = $user AND share_id = shares.id) AS count
-FROM shares
-WHERE user_id = $user_id
-ORDER BY created_at DESC
+        SELECT s.id,s.user_id,body,image,s.created_at,dog_name,dog_gender,dog_image,
+        (SELECT COUNT(user_id) FROM nices WHERE share_id = s.id) AS nice,
+        (SELECT COUNT(user_id) FROM comments WHERE share_id = s.id) AS comment,
+        (SELECT COUNT(*) FROM nices WHERE user_id = $user AND share_id = s.id) AS count
+        FROM shares AS s
+        INNER JOIN dogs_profiles AS d ON s.user_id = d.user_id
+        WHERE s.user_id = $user_id AND deleted_at IS NULL
+        ORDER BY created_at DESC
 SQL;
         $shares = DB::select($sql2);
 
@@ -55,39 +53,33 @@ SQL;
             $shares = null;
         }
 
-        //いいね一覧の取得
+        //いいね一覧タブの取得
         $sql3 = <<<SQL
-SELECT share_id AS id, shares.user_id, body, image, created_at,
-        (SELECT dog_name FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_name,
-        (SELECT dog_gender FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_gender,
-        (SELECT dog_image FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_image,
-        (SELECT COUNT(user_id) FROM nices WHERE share_id = shares.id) AS nice,
-        (SELECT COUNT(user_id) FROM comments WHERE share_id = shares.id) AS comment,
-        (SELECT COUNT(*) FROM nices WHERE user_id = $user AND share_id = shares.id) AS count
-FROM nices
-LEFT JOIN shares
-ON nices.share_id = shares.id
-WHERE nices.user_id = $user_id
-ORDER BY created_at DESC
+        SELECT s.id,s.user_id,body,image,s.created_at,dog_name,dog_gender,dog_image,
+        (SELECT COUNT(user_id) FROM nices WHERE share_id = s.id) AS nice,
+        (SELECT COUNT(user_id) FROM comments WHERE share_id = s.id) AS comment,
+        (SELECT COUNT(*) FROM nices WHERE user_id = $user AND share_id = s.id) AS count
+        FROM shares AS s
+        INNER JOIN dogs_profiles AS d ON s.user_id = d.user_id
+        WHERE s.id IN (SELECT share_id FROM nices WHERE user_id = $user_id) AND deleted_at IS NULL
+        ORDER BY created_at DESC
 SQL;
         $nices = DB::select($sql3);
 
-        //コメント一覧の取得
+        //コメント一覧タブの取得
         $sql4 = <<<SQL
-SELECT id,user_id,body,image,created_at,
-        (SELECT dog_name FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_name,
-        (SELECT dog_gender FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_gender,
-        (SELECT dog_image FROM dogs_profiles WHERE user_id = shares.user_id) AS dog_image,
-        (SELECT COUNT(user_id) FROM nices WHERE share_id = shares.id) AS nice,
-        (SELECT COUNT(user_id) FROM comments WHERE share_id = shares.id) AS comment,
-        (SELECT COUNT(*) FROM nices WHERE user_id = $user AND share_id = shares.id) AS count
-FROM shares
-WHERE id IN (SELECT share_id FROM comments WHERE user_id = $user_id)
+SELECT s.id,s.user_id,body,image,s.created_at,dog_name,dog_gender,dog_image,
+        (SELECT COUNT(user_id) FROM nices WHERE share_id = s.id) AS nice,
+        (SELECT COUNT(user_id) FROM comments WHERE share_id = s.id) AS comment,
+        (SELECT COUNT(*) FROM nices WHERE user_id = $user AND share_id = s.id) AS count
+FROM shares AS s
+INNER JOIN dogs_profiles AS d ON s.user_id = d.user_id
+WHERE s.id IN (SELECT share_id FROM comments WHERE user_id = $user_id) AND deleted_at IS NULL
 ORDER BY created_at DESC
 SQL;
         $comments = DB::select($sql4);
 
-        if (!empty($dog_prof)) {
+        if (! empty($dog_prof)) {
             return view(
                 'mypage.index',
                 compact('dog_prof', 'user_id', 'shares', 'nices', 'comments')
@@ -109,7 +101,7 @@ SQL;
 
 
     /**
-     * @param  DogProfileRequest  $request
+     * @param DogProfileRequest $request
      * @return Application|RedirectResponse|Redirector
      */
     public function store(DogProfileRequest $request)
@@ -127,7 +119,7 @@ SQL;
         $dog_prof = new Dogs_profile;
 
         //postから画像ファイルがあるかを判定
-        if (!empty($post_data['dog_image'])) {
+        if (! empty($post_data['dog_image'])) {
             //画像がある場合
             $path = $post_data['dog_image']->store('public/dog_image');
             $dog_prof->dog_image = basename($path);
@@ -190,7 +182,7 @@ SQL;
 
 
     /**
-     * @param  DogProfileRequest  $request
+     * @param DogProfileRequest $request
      * @return RedirectResponse
      */
     public function update(DogProfileRequest $request): RedirectResponse
@@ -199,12 +191,12 @@ SQL;
         $dog_prof = Dogs_profile::where('user_id', $user_id)->first();
         $post_data = $request->validated();
 
-        if (!empty($dog_prof)) {
+        if (! empty($dog_prof)) {
             //画像があるか判別
             if ($request->remove === 'true') {
                 $dog_prof->dog_image = null;
             }
-            if (!empty($post_data['dog_image'])) {
+            if (! empty($post_data['dog_image'])) {
                 $path = $post_data['dog_image']->store('public/dog_image');
                 $dog_prof->dog_image = basename($path);
             }

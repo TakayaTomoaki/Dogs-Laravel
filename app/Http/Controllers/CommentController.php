@@ -24,7 +24,7 @@ class CommentController extends Controller
         $user_id = Auth::id();
 
         $user = DB::table('dogs_profiles')
-        ->select("dog_image")
+        ->select('dog_gender', 'dog_image')
         ->where('user_id', $user_id)
         ->first();
 
@@ -34,7 +34,7 @@ SELECT id, user_id, body, image, created_at,
     (SELECT COUNT(user_id) FROM comments WHERE share_id = $id) AS comment,
     (SELECT COUNT(*) FROM nices WHERE user_id = $user_id AND share_id = $id) AS count
 FROM shares
-WHERE id = $id
+WHERE id = $id AND deleted_at IS NULL
 SQL;
         $shares = DB::select($sql1);
         if ($shares === []) {
@@ -65,15 +65,13 @@ SQL;
 
 
         $sql2 = <<<SQL
-SELECT id, user_id, comment, created_at,
-       (SELECT dog_name FROM dogs_profiles WHERE user_id = comments.user_id) AS dog_name,
-       (SELECT dog_gender FROM dogs_profiles WHERE user_id = comments.user_id) AS dog_gender,
-       (SELECT dog_image FROM dogs_profiles WHERE user_id = comments.user_id) AS dog_image,
-       (SELECT COUNT(*) FROM likes WHERE user_id = $user_id AND comment_id = comments.id) AS count,
-       (SELECT COUNT(user_id) FROM likes WHERE comment_id = comments.id) AS likeCount
-FROM comments
-WHERE share_id = $id
-ORDER BY created_at DESC
+        SELECT c.id,c.user_id,comment,c.created_at,dog_name,dog_gender,dog_image,
+       (SELECT COUNT(*) FROM likes WHERE user_id = $user_id AND comment_id = c.id) AS count,
+       (SELECT COUNT(user_id) FROM likes WHERE comment_id = c.id) AS likeCount
+        FROM comments AS c
+        INNER JOIN dogs_profiles AS d ON d.user_id = c.user_id
+        WHERE share_id = $id AND deleted_at IS NULL
+        ORDER BY created_at DESC
 SQL;
         $comments = DB::SELECT($sql2);
 
@@ -89,7 +87,7 @@ SQL;
 
 
     /**
-     * @param  PostCommentRequest  $request
+     * @param PostCommentRequest $request
      * @param $id
      * @return RedirectResponse
      */
@@ -121,24 +119,19 @@ SQL;
 
 
     /**
-     * @param  Request  $request
+     * @param Request $request
      * @return RedirectResponse
      */
     public function delete(Request $request): RedirectResponse
     {
         $user_id = Auth::id();
-        $post = $request->post();
+        $post_id = $request->post('id');
 
-        $sql3 = <<<SQL
-DELETE
-FROM comments
-WHERE id = $post[id]
-SQL;
-        $log = DB::DELETE($sql3);
-        Log::debug($user_id.$post['id'].'commentの削除に成功しました。');
+        $log = Comment::find($post_id)->delete();
+        Log::debug($user_id.$post_id.'commentの削除に成功しました。');
 
         if ($log === false) {
-            Log::debug($user_id.$post['id'].'commentの削除に失敗しました。');
+            Log::debug($user_id.$post_id.'commentの削除に失敗しました。');
             return back()->with('通信エラー。もう一度、ボタンを押して下さい。');
         }
 

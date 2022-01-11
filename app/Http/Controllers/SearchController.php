@@ -14,7 +14,7 @@ use Illuminate\View\View;
 class SearchController extends Controller
 {
     /**
-     * @param  Request  $request
+     * @param Request $request
      * @return Application|Factory|RedirectResponse|View
      */
     public function add(Request $request)
