@@ -99,25 +99,38 @@ $(function () {
                 data[0].map((obj) => {
                     add_content += [
                         `
-                <a href="/dog/comment/${obj.id}" class="list-group-item list-group-item-action">
+                <a href="/dog/comment/${obj.id}" class="list-group-item list-group-item-action pl-2">
                 
                   <div class="media mt-2">
                   `,
                     ];
 
                     if (obj.dog_image === null) {
-                        add_content += [
-                            `
-                    <svg class="bd-placeholder-img rounded align-self-start mr-3" width="60" height="60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Generic placeholder image">
-                      <title>Generic placeholder image</title>
-                      <rect width="100%" height="100%" fill="#868e96"/>
-                    </svg>
+                        if (obj.dog_gender === 0) {
+                            add_content += [
+                                `
+                    <div class="fa-stack d-flex" style="font-size:34.3px; margin:0 3.14px">
+          <i class="fas fa-square fa-stack-2x" style="color:deepskyblue"></i>
+          <i class="fas fa-dog fa-stack-1x fa-inverse fa-lg" style="color:white"></i>
+        </div>
                     `,
-                        ];
+                            ];
+                        } else {
+                            add_content += [
+                                `
+                    <div class="fa-stack d-flex" style="font-size:34.3px; margin:0 3.14px">
+          <i class="fas fa-square fa-stack-2x" style="color:hotpink"></i>
+          <i class="fas fa-dog fa-stack-1x fa-inverse fa-lg" style="color:white"></i>
+        </div>
+                    `,
+                            ];
+                        }
                     } else {
                         add_content += [
                             `
-                    <img src="storage/dog_image/${obj.dog_image}" alt="dog_image" class="bd-placeholder-img rounded mr-3" width="60" height="60">
+                    <div class="pl-3 pr-2">
+                      <img src="storage/dog_image/${obj.dog_image}" alt="dog_image" class="bd-placeholder-img rounded mr-2" width="60" height="60">
+                    </div>
                     `,
                         ];
                     }

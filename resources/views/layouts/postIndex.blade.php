@@ -1,15 +1,18 @@
 <section>
-  <a href="{{ route('comment', ['id' => $post->id]) }}" class="list-group-item list-group-item-action">
+  <a href="{{ route('comment', ['id' => $post->id]) }}"
+     class="list-group-item list-group-item-action pl-2">
 
     <div class="media mt-2">
       @if($post->dog_image === null)
-        <svg class="bd-placeholder-img rounded align-self-start mr-3" width="60" height="60" xmlns="http://www.w3.org/2000/svg"
-             preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Generic placeholder image">
-          <title>Generic placeholder image</title>
-          <rect width="100%" height="100%" fill="#868e96"/>
-        </svg>
+
+        <div class="fa-stack d-flex" style="font-size:34.3px; margin:0 3.14px">
+          <i class="fas fa-square fa-stack-2x" style="color:@if($post->dog_gender === 0)deepskyblue @else hotpink @endif"></i>
+          <i class="fas fa-dog fa-stack-1x fa-inverse fa-lg" style="color:white"></i>
+        </div>
       @else
-        <img src="{{ asset('storage/dog_image/'.$post->dog_image) }}" alt="dog_image" class="bd-placeholder-img rounded mr-3" width="60" height="60">
+        <div class="pl-3 pr-2">
+          <img src="{{ asset('storage/dog_image/'.$post->dog_image) }}" alt="dog_image" class="bd-placeholder-img rounded mr-2" width="60" height="60">
+        </div>
       @endif
 
       <div class="media-body">
