@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
@@ -12,13 +12,13 @@ use Illuminate\Support\Facades\Log;
 class LikeController extends Controller
 {
     /**
-     * @param  Request  $request
+     * @param Request $request
      * @return RedirectResponse
      */
     public function store(Request $request): RedirectResponse
     {
-        $post = $request->post();
-        if ($post['id'] === null) {
+        $post_id = $request->post('id');
+        if ($post_id === null) {
             return back();
         }
 
@@ -26,7 +26,7 @@ class LikeController extends Controller
         $user_id = Auth::id();
 
         $like->user_id = $user_id;
-        $like->comment_id = $post['id'];
+        $like->comment_id = $post_id;
 
         $log = $like->save();
         Log::debug($like . 'likeの保存に成功しました。');
@@ -43,26 +43,26 @@ class LikeController extends Controller
 
 
     /**
-     * @param  Request  $request
+     * @param Request $request
      * @return RedirectResponse
      */
     public function delete(Request $request): RedirectResponse
     {
         $user_id = Auth::id();
-        $post = $request->post();
+        $post_id = $request->post('id');
 
         $sql = <<<SQL
 DELETE
 FROM likes
 WHERE user_id = $user_id
-AND comment_id = $post[id]
+AND comment_id = $post_id
 SQL;
 
         $log = DB::DELETE($sql);
-        Log::debug($user_id . $post['id'] . 'いいねの削除に成功しました。');
+        Log::debug($user_id . $post_id . 'いいねの削除に成功しました。');
 
         if ($log === false) {
-            Log::debug($user_id . $post['id'] . 'いいねの削除に失敗しました。');
+            Log::debug($user_id . $post_id . 'いいねの削除に失敗しました。');
             return back()->with('通信エラー。もう一度、ボタンを押して下さい。');
         }
         return back();

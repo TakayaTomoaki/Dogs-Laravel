@@ -46,7 +46,7 @@ class SetupController extends Controller
 
 
     /**
-     * @param  Request  $request
+     * @param Request $request
      * @return RedirectResponse
      * @throws Exception
      */
