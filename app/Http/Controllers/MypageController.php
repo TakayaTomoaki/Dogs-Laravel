@@ -36,7 +36,12 @@ SQL;
 
         $dog_prof = DB::SELECT($sql);
 
-        //投稿一覧タブの取得
+        if (empty($dog_prof)) {
+            return view('mypage.mypage', ['user_id' => $user_id]);
+        }
+
+
+        //投稿一覧タブの情報取得
         $sql2 = <<<SQL
         SELECT s.id,s.user_id,body,image,s.created_at,dog_name,dog_gender,dog_image,
         (SELECT COUNT(user_id) FROM nices WHERE share_id = s.id) AS nice,
@@ -53,7 +58,7 @@ SQL;
             $shares = null;
         }
 
-        //いいね一覧タブの取得
+        //いいね一覧タブの情報取得
         $sql3 = <<<SQL
         SELECT s.id,s.user_id,body,image,s.created_at,dog_name,dog_gender,dog_image,
         (SELECT COUNT(user_id) FROM nices WHERE share_id = s.id) AS nice,
@@ -66,7 +71,7 @@ SQL;
 SQL;
         $nices = DB::select($sql3);
 
-        //コメント一覧タブの取得
+        //コメント一覧タブの情報取得
         $sql4 = <<<SQL
 SELECT s.id,s.user_id,body,image,s.created_at,dog_name,dog_gender,dog_image,
         (SELECT COUNT(user_id) FROM nices WHERE share_id = s.id) AS nice,
@@ -79,13 +84,10 @@ ORDER BY created_at DESC
 SQL;
         $comments = DB::select($sql4);
 
-        if (! empty($dog_prof)) {
-            return view(
-                'mypage.index',
-                compact('dog_prof', 'user_id', 'shares', 'nices', 'comments')
-            );
-        }
-        return view('mypage.mypage', ['user_id' => $user]);
+        return view(
+            'mypage.index',
+            compact('dog_prof', 'user_id', 'shares', 'nices', 'comments')
+        );
     }
 
 
