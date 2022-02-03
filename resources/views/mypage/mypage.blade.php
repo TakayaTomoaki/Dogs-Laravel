@@ -55,12 +55,8 @@
             </div>
             <hr class="my-0">
             <div class="row d-flex py-2">
-              <a href="{{ route('follower', ['user_id' => $user_id]) }}">
-                <p class="mb-0 ml-3"> フォロー中</p>
-              </a>
-              <a href="{{ route('receiver', ['user_id' => $user_id]) }}">
-                <p class="mb-0 ml-5"> フォロワー</p>
-              </a>
+              <p class="mb-0 ml-3"> フォロー中</p>
+              <p class="mb-0 ml-5"> フォロワー</p>
             </div>
           </div>
         </div>
